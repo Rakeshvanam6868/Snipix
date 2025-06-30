@@ -44,13 +44,13 @@ export default function Bug() {
           <div className="flex flex-col gap-2 min-[400px]:flex-row justify-center">
             <Link
               className="inline-flex h-10 items-center justify-center rounded-md bg-[#016ACC] px-8 text-sm font-medium text-white shadow transition-colors hover:bg-[#016accb0] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-400 dark:text-gray-950 dark:hover:bg-gray-400/90 dark:focus-visible:ring-gray-300"
-              href="https://github.com/SnipSavvy?tab=repositories"
+              href="https://github.com/Rakeshvanam6868/Snipix/issues"
             >
               Raise an Issue
             </Link>
             <Link
               className="inline-flex h-10 items-center justify-center rounded-md border border-gray-400 bg-transparent px-8 text-sm font-medium text-gray-50 shadow-sm transition-colors hover:bg-gray-800 hover:text-gray-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
-              href="https://github.com/SnipSavvy?tab=repositories"
+              href="https://github.com/Rakeshvanam6868/Snipix"
             >
               Contribute
             </Link>

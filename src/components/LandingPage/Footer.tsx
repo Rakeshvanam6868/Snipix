@@ -12,7 +12,7 @@ const Footer = () => {
         <div className="flex flex-row gap-4">
         <div className="flex items-center gap-x-8 mt-6">
           <a
-            href="https://www.linkedin.com/company/snipsavvy-official"
+            href="https://www.linkedin.com/in/rakeshvanam1/"
             target="_blank"
             className="cursor-pointer"
           >
@@ -21,7 +21,7 @@ const Footer = () => {
         </div>
         <div className="flex items-center gap-x-8 mt-6">
           <a
-            href="https://www.github.com/SnipSavvy/"
+            href="https://github.com/Rakeshvanam6868/Snipix"
             target="_blank"
             className="cursor-pointer"
           >
@@ -31,7 +31,7 @@ const Footer = () => {
         </div>
         <div className="flex items-center mt-6">
           <p className="text-base leading-4 text-gray-300">
-            2021 <span className="font-semibold">SnipSavvy</span>
+            <span>{new Date().getFullYear()}</span> <span className="font-semibold">SnipSavvy</span>
           </p>
           <div className="border-l border-gray-800 pl-2 ml-2">
             <p className="text-base leading-4 text-gray-300">

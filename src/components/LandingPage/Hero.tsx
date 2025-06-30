@@ -109,7 +109,7 @@ const Hero: React.FC = () => {
                   </Link>
                 </li>
                 <li className="pl-3 lg:pl-5 xl:pl-8 cursor-pointer hover:text-gray-300 ease-in">
-                  <Link href="https://github.com/SnipSavvy?tab=repositories" target="_blank" className="focus:outline-none focus:ring-2 focus:ring-white">
+                  <Link href="https://github.com/Rakeshvanam6868/Snipix" target="_blank" className="focus:outline-none focus:ring-2 focus:ring-white">
                     Github
                   </Link>
                 </li>
