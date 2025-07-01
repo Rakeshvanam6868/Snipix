@@ -9,9 +9,9 @@ const fontSans = FontSans({
 });
 
 export const metadata = {
-  title: "SnipSavvy",
+  title: "Snipix",
   description:
-    "Our platform, SnipSavvy, aims to address these challenges by providing a comprehensive solution for developers to store, categorize, share, and collaborate on code snippets and components seamlessly.",
+    "Our platform, Snipix, aims to address these challenges by providing a comprehensive solution for developers to store, categorize, share, and collaborate on code snippets and components seamlessly.",
 };
 
 type LayoutProps = {
