@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum SharedDataType {
+  workspace
+  category
+  snippet
+}
+
+enum SharedStatus {
+  invited
+  accepted
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  image     String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  ownedWorkspaces Workspace[] @relation("OwnerToWorkspace")
+  sharedWith      Shared[]    @relation("UserToShared") // Shared via Shared model
+  snippets        Snippet[]
+  comments        Comment[]
+}
+
+model Workspace {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String
+  ownerId     Int
+  owner       User       @relation("OwnerToWorkspace", fields: [ownerId], references: [id])
+  categories  Category[]
+  sharedWith  Shared[]   @relation("WorkspaceToShared")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  snippets    Snippet[]
+  sharedWith  Shared[]  @relation("CategoryToShared")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Snippet {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  code        String
+  tags        String[]
+  categoryId  Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  shareStatus Boolean   @default(false)
+  comments    Comment[]
+  sharedWith  Shared[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  userId    Int
+  snippetId Int
+  user      User     @relation(fields: [userId], references: [id])
+  snippet   Snippet  @relation(fields: [snippetId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Shared {
+  id         Int            @id @default(autoincrement())
+  email      String // Email of the person it's shared with
+  sharedData SharedDataType
+  status     SharedStatus?  @default(invited)
+
+  // Foreign keys
+  workspaceId Int?
+  workspace   Workspace? @relation("WorkspaceToShared", fields: [workspaceId], references: [id])
+
+  categoryId Int?
+  category   Category? @relation("CategoryToShared", fields: [categoryId], references: [id])
+
+  snippetId Int?
+  snippet   Snippet? @relation(fields: [snippetId], references: [id])
+
+  userId Int? // Optional: only if shared with registered user
+  user   User? @relation("UserToShared", fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
