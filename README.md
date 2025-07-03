@@ -1,4 +1,4 @@
-## SnipSavvy 🚀
+## Snipix 🚀
 
 SnipSavvy is a code snippet management platform, coded by developers for developers
 
