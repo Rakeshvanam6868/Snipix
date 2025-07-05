@@ -1,16 +1,16 @@
-## SnipSavvy 🚀
+## Snipix 🚀
 
-SnipSavvy is a code snippet management platform, coded by developers for developers
+Snipix is a code snippet management platform, coded by developers for developers
 
-Website Link: https://snipsavvy.vercel.app/
+Website Link: https://Snipix.vercel.app/
 
-Backend Repo: https://github.com/SnipSavvy/SnipSavvy_Backend
+Backend Repo: https://github.com/Rakeshvanam6868/Snipix-Backend
 
-![image](https://github.com/SnipSavvy/SnipSavvy_Frontend/assets/169388490/e3be5a71-2ed7-4543-b12e-97e144336797)
+<!-- ![image](https://github.com/Snipix/Snipix_Frontend/assets/169388490/e3be5a71-2ed7-4543-b12e-97e144336797)
 
-![image](https://github.com/sahilrohera10/SnipSavvy_Prod_Frontend/assets/90958499/f3ae0e5d-e3c8-4770-bb72-31612fe857d8)
+![image](https://github.com/sahilrohera10/Snipix_Prod_Frontend/assets/90958499/f3ae0e5d-e3c8-4770-bb72-31612fe857d8)
 
-![image](https://github.com/sahilrohera10/SnipSavvy_Prod_Frontend/assets/90958499/4671bb1e-b725-4224-b68e-c0c0b5fa8251)
+![image](https://github.com/sahilrohera10/Snipix_Prod_Frontend/assets/90958499/4671bb1e-b725-4224-b68e-c0c0b5fa8251) -->
 
 
 ## ⭐Features 
@@ -25,8 +25,8 @@ Backend Repo: https://github.com/SnipSavvy/SnipSavvy_Backend
 
 * Sharing is multi level, a user can share a whole workspace, a collection or a single snippet which can be restricted by the user.
   
-![image](https://github.com/SnipSavvy/SnipSavvy_Frontend/assets/169388490/bad6ce8e-f7ca-41bc-9bf9-c1675196df44)
-![image](https://github.com/SnipSavvy/SnipSavvy_Frontend/assets/169388490/66184825-d1db-4caf-8957-7e3aa0b84ecf)
+<!-- ![image](https://github.com/Snipix/Snipix_Frontend/assets/169388490/bad6ce8e-f7ca-41bc-9bf9-c1675196df44)
+![image](https://github.com/Snipix/Snipix_Frontend/assets/169388490/66184825-d1db-4caf-8957-7e3aa0b84ecf) -->
 
 
 
@@ -38,7 +38,7 @@ Backend Repo: https://github.com/SnipSavvy/SnipSavvy_Backend
 
 * Implementing History Tracking feature for code snippets, upto the last edition
   
-![image](https://github.com/SnipSavvy/SnipSavvy_Frontend/assets/169388490/9a415e7f-321a-4c5e-85a6-ea041e0c63a6)
+<!-- ![image](https://github.com/Snipix/Snipix_Frontend/assets/169388490/9a415e7f-321a-4c5e-85a6-ea041e0c63a6) -->
 
 
 ## Frontend Tech Stack 🚀
@@ -51,13 +51,13 @@ Backend Repo: https://github.com/SnipSavvy/SnipSavvy_Backend
  * **Material UI**
 
 
-## ⭐Getting Started with Contributing
+<!-- ## ⭐Getting Started with Contributing
 
 Refer to this Contributing guide- 
-https://github.com/SnipSavvy/SnipSavvy_Frontend/blob/main/.github/Contribution%20Guide/CONTRIBUTING.md
+https://github.com/Snipix/Snipix_Frontend/blob/main/.github/Contribution%20Guide/CONTRIBUTING.md
 
 Refer to this for Issue Template- 
-https://github.com/SnipSavvy/SnipSavvy_Frontend/blob/main/.github/Issue%20Template/new_issue.md
+https://github.com/Snipix/Snipix_Frontend/blob/main/.github/Issue%20Template/new_issue.md
 
 Thank you for considering contributing to our project. Your involvement is invaluable to us. To ensure a smooth and collaborative process, please follow these steps:
 
@@ -154,7 +154,7 @@ git push origin <branch-name>
 
 We greatly appreciate your contributions and look forward to reviewing your pull request.
 
-![image](https://github.com/SnipSavvy/SnipSavvy_Frontend/assets/169388490/c9fa4d44-a709-4fac-85e0-07c5fcad6626)
+![image](https://github.com/Snipix/Snipix_Frontend/assets/169388490/c9fa4d44-a709-4fac-85e0-07c5fcad6626)
 
 ## ⭐Pull Request Template
 
@@ -182,4 +182,4 @@ Please ensure that your pull request meets the following requirements:
 
 
 ### Additional Notes
-[Include any additional information or notes that may be relevant for reviewers.]
+[Include any additional information or notes that may be relevant for reviewers.] -->
