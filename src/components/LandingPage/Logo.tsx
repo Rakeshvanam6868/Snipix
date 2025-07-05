@@ -5,7 +5,7 @@ interface LogoProps {
 export function Logo({className}:LogoProps) {
     return (
     <div>
-        <h1 className={`text-white font-semibold pb-6 ${className}`}>SnipSavvy</h1>
+        <h1 className={`text-white font-semibold pb-6 ${className}`}>Snipix</h1>
     </div>
     )
 }

@@ -26,7 +26,7 @@ export default function Component() {
                     Organize Your Code Snippets with Ease
                   </h2>
                   <p className="max-w-[600px] text-secondary md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                    SnipSavvy provides a clean and intuitive interface to help
+                    Snipix provides a clean and intuitive interface to help
                     you quickly find, organize, and share your code snippets.
                     Never waste time searching for that one snippet you need
                     again.
@@ -65,7 +65,7 @@ export default function Component() {
                 // style={{ textShadow: "0px 0px 10px #006BCB" }}
                 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-gray-50"
               >
-                SnipSavvy Offers
+                Snipix Offers
               </h2>
               <p className="mx-auto max-w-[700px] text-secondary md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed"></p>
             </div>

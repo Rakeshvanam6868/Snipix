@@ -137,7 +137,7 @@ const Collection = () => {
     const body = {
       id: workspace,
       name: data,
-      description: "SnipSavvy Project Snippets",
+      description: "Snipix Project Snippets",
     };
     const token = localStorage.getItem("token");
     const headers = {

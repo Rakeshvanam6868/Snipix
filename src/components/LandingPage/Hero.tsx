@@ -125,7 +125,7 @@ const Hero: React.FC = () => {
             </h1>
             <div className="f-f-r text-base lg:text-base pb-20 sm:pb-0 pt-10 xl:pt-6">
               <h2>
-                SnipSavvy provides a clean and intuitive interface to help you
+                Snipix provides a clean and intuitive interface to help you
                 quickly find, organize, and share your code snippets. Never
                 waste time searching for that one snippet you need again.
               </h2>

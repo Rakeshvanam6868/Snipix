@@ -8,7 +8,7 @@ const Welcome = () => {
       className="opacity-30 grayscale m-auto"
       width={700}
       height={200}
-      alt="Picture of the author"
+      alt="Picture of the "
     />
     </div>
   );

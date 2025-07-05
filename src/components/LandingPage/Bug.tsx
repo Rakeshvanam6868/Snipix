@@ -18,7 +18,7 @@ export default function Bug() {
                   Raise an issue on the repository
                 </h3>
                 <p className="text-gray-400">
-                  If you encounter any bugs or issues while using SnipSavvy,
+                  If you encounter any bugs or issues while using Snipix,
                   please raise an issue on the repository so our team can
                   investigate and address the problem.
                 </p>
@@ -34,7 +34,7 @@ export default function Bug() {
                 </h3>
                 <p className="text-gray-400">
                   If you have the skills and expertise to fix the bug or improve
-                  SnipSavvy, we welcome your contributions. Please submit a pull
+                  Snipix, we welcome your contributions. Please submit a pull
                   request with your changes, and our team will review and merge
                   it.
                 </p>

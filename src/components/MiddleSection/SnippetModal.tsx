@@ -94,7 +94,7 @@ const SnippetModal = () => {
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
-              <SheetTitle>Make your new snippet with SnipSavvy</SheetTitle>
+              <SheetTitle>Make your new snippet with Snipix</SheetTitle>
               <SheetDescription>
                 <div className="fixed top-16 right-5 h-full w-1/5 bg-black transition-all duration-900 z-50">
                   <div className="p-4 space-y-4">
