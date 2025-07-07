@@ -110,14 +110,11 @@ export default function Header() {
                   <a href="/" onClick={() => setOpen(false)} className="block text-lg font-medium hover:text-primary transition-colors">
                     Home
                   </a>
-                  <a href="/deals" onClick={() => setOpen(false)} className="block text-lg font-medium hover:text-primary transition-colors">
-                    Deals
+                  <a href="#features" onClick={() => setOpen(false)} className="block text-lg font-medium hover:text-primary transition-colors">
+                    Features
                   </a>
-                  <a href="/blogs" onClick={() => setOpen(false)} className="block text-lg font-medium hover:text-primary transition-colors">
-                    Blogs
-                  </a>
-                  <a href="/contact" onClick={() => setOpen(false)} className="block text-lg font-medium hover:text-primary transition-colors">
-                    Contact
+                  <a href="https://github.com/Rakeshvanam6868/Snipix" onClick={() => setOpen(false)} className="block text-lg font-medium hover:text-primary transition-colors">
+                    Github
                   </a>
                   <div className="mt-6 pt-6 border-t border-border flex flex-col gap-4">
                     {/* Theme Toggle inside Sheet for Mobile */}
