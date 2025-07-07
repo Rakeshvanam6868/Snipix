@@ -49,8 +49,8 @@ Backend Repo: https://github.com/Rakeshvanam6868/Snipix-Backend
  * **Zod**
  * **Axios**
  * **Material UI**
-
-
+<!-- https://www.framer.com/marketplace/templates/enterprise-x/
+https://www.framer.com/marketplace/templates/lanx/ -->
 <!-- ## ⭐Getting Started with Contributing
 
 Refer to this Contributing guide- 

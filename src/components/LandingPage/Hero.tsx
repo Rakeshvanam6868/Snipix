@@ -3,11 +3,16 @@ import React, { useState } from "react";
 import { SignUpButton } from "../SignUpButton/SignUpButton";
 import Image from "next/image";
 import Link from "next/link"; // Import Link
+import Header from "./Header";
 
 const Hero: React.FC = () => {
   const [menu, setMenu] = useState<boolean>(false);
   return (
     <>
+    <Header/>
+    <div className="">
+
+    </div>
       <div className="relative w-full h-screen bg-[#0E1116]">
         <div className="hidden md:block">
           <Image
@@ -23,9 +28,9 @@ const Hero: React.FC = () => {
           <div className="flex py-2 justify-between items-center px-4">
             <div>
               <Image
-                width={45}
-                height={45}
-                className="w-[45vw] mt-10"
+                width={25}
+                height={25}
+                className="w-[10vw] "
                 src="/fullLogo.png"
                 alt="logo"
               />
@@ -89,7 +94,7 @@ const Hero: React.FC = () => {
           <div className="relative z-10 mx-auto container hidden w-full px-4 xl:px-0 lg:flex justify-between items-center py-11">
             <div>
               <Image
-                width={200}
+                width={100}
                 height={15}
                 // className="w-[14vw]"
                 src="/fullLogo.png"
