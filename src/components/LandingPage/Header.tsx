@@ -129,7 +129,7 @@ export default function Header() {
                         <AvatarImage src="https://github.com/shadcn.png " />
                         <AvatarFallback>CN</AvatarFallback>
                       </Avatar>
-                      <span></span>
+                      <span>Profilke</span>
                     </div>
                     {/* <DropdownMenu>
                       <DropdownMenuTrigger asChild>
