@@ -23,7 +23,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-gradient-to-r from-[#141a1d] dark:to-[#0e0d0d] border-b border-[#f2f2f237] ">
+    <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-gradient-to-r from-[#141a1d] to-[#030303] border-b border-[#f2f2f237] ">
       <div className="container mx-auto px-4 sm:px-6 lg:px-10 xl:px-14">
         <div className="flex items-center justify-between h-16">
           {/* Logo - Always Visible */}
@@ -125,11 +125,7 @@ export default function Header() {
 
                     {/* Avatar + Profile Dropdown inside Sheet */}
                     <div className="flex items-center gap-3 cursor-pointer p-2 rounded-md hover:bg-muted">
-                      <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png " />
-                        <AvatarFallback>CN</AvatarFallback>
-                      </Avatar>
-                      <span></span>
+                      <SignUpButton description="Sign In"></SignUpButton>
                     </div>
                     {/* <DropdownMenu>
                       <DropdownMenuTrigger asChild>

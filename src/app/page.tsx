@@ -14,49 +14,8 @@ export default function Component() {
       <main className="flex-1">
         <Hero />
        
-        <section className="w-full py-12 md:py-24 lg:py-24 bg-[#151519] text-gray-50">
-          <div className="container px-4 md:px-6">
-            <div className=" items-center gap-6  lg:gap-10">
-              <div className="flex justify-center space-y-4">
-                {/* <div className="space-y-2">
-                  <div className="inline-block rounded-lg bg-gray-800 px-3 py-1 text-lg text-gray-50">
-                    Key Features
-                  </div>
-                  <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-[#00AEFF]">
-                    Organize Your Code Snippets with Ease
-                  </h2>
-                  <p className="max-w-[600px] text-secondary md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                    Snipix provides a clean and intuitive interface to help
-                    you quickly find, organize, and share your code snippets.
-                    Never waste time searching for that one snippet you need
-                    again.
-                  </p>
-                </div> */}
-                <Features />
-
-                {/* <ul className="grid gap-4">
-                  <li className="flex items-center gap-2">
-                    <CheckIcon className="h-5 w-5 text-[#00B4D8]" />
-                    <span className="text-[#00B4D8]">
-                      Powerful search and filtering
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckIcon className="h-5 w-5 text-[#00B4D8]" />
-                    <span className="text-[#00B4D8]">
-                      Seamless integration with your workflow
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckIcon className="h-5 w-5 text-[#00B4D8]" />
-                    <span className="text-[#00B4D8]">
-                      Secure sharing and collaboration
-                    </span>
-                  </li>
-                </ul> */}
-              </div>
-            </div>
-          </div>
+        <section className="w-full py-12 px-20 md:py-24 lg:py-24 bg-[#0b0b0e] text-gray-50">
+          <Features />
         </section>
         <section className="w-full py-12 md:py-20 lg:pt-32 pb-24 bg-[#0E0E11] px-32">
           <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6 lg:gap-10">
