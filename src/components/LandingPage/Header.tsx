@@ -39,7 +39,7 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <Menubar className="bg-transparent space-x-6 text-xl -ml-24 font-bold #F2F2F2">
+            <Menubar className="bg-transparent space-x-6 text-xl -ml-5 font-bold #F2F2F2">
               <MenubarMenu>
                 <MenubarTrigger asChild>
                   <a href="/" className="cursor-pointer hover:text-primary transition-colors">

@@ -55,7 +55,7 @@ export function SignUpButton({ description }: ButtonProps) {
       <StarBorder
         onClick={(e) => handleSignInGoogle(e)}
         as="button"
-        className="custom-class m-2"
+        className="custom-class "
         color="cyan"
         speed="5s"
       >
