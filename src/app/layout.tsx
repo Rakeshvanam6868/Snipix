@@ -8,10 +8,15 @@ const fontSans = FontSans({
   variable: "--font-sans",
 });
 
+// export const metadata = {
+//   title: "Snipix",
+//   description:
+//     "Our platform, Snipix, aims to address these challenges by providing a comprehensive solution for developers to store, categorize, share, and collaborate on code snippets and components seamlessly.",
+// };
 export const metadata = {
-  title: "Snipix",
+  title: "Snipix - Manage Your Code Snippets with Ease",
   description:
-    "Our platform, Snipix, aims to address these challenges by providing a comprehensive solution for developers to store, categorize, share, and collaborate on code snippets and components seamlessly.",
+    "Snipix provides a clean and intuitive interface to help you quickly find, organize, and share your code snippets. Never waste time searching for that one snippet you need again.",
 };
 
 type LayoutProps = {
