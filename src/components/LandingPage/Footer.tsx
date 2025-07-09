@@ -4,7 +4,7 @@ import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <div className=" xl:px-20 lg:px-12 sm:px-6 px-4 py-12 bg-[#0E0E11]">
+    <div className=" xl:px-20 lg:px-12 sm:px-6 px-4 py-12 backdrop-blur-md bg-gradient-to-r from-[#0b0b0e] to-[#030303] border-t border-[#f2f2f237]">
       <div className="flex flex-col items-center justify-center">
         <div className="flex flex-row">
           <Image width={200} height={100} src="/fullLogo.png" alt="" />

@@ -1,9 +1,4 @@
-import { FaRegFolderOpen } from "react-icons/fa6";
-import { TiCloudStorage } from "react-icons/ti";
-import { MdAssistantNavigation } from "react-icons/md";
-import { FaSearch } from "react-icons/fa";
-import { CiShare2 } from "react-icons/ci";
-import { FaShare } from "react-icons/fa";
+
 import { GlowingEffectDemo } from "./GlowingEffectDemo";
 
 export default function Features() {

@@ -5,6 +5,8 @@ import { signIn, useSession } from "next-auth/react";
 import React, { useLayoutEffect, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import { useRouter } from "next/navigation";
+import StarBorder from "../ui/StarBorder";
+
 
 interface ButtonProps {
   description: string;
@@ -33,11 +35,10 @@ export function SignUpButton({ description }: ButtonProps) {
         }
       );
     };
-    if(localStorage.getItem("token")){
+    if (localStorage.getItem("token")) {
       router.push("/workspace");
-    }else if(session && session.status === "authenticated") {
+    } else if (session && session.status === "authenticated") {
       setIsLoading(true);
-
 
       CreateUser();
     }
@@ -50,12 +51,16 @@ export function SignUpButton({ description }: ButtonProps) {
   return (
     <>
       {isLoading && <LoadingSpinner />}
-      <button
+      {/* <button className="px-3 py-2 bg-[#045AA6] text-white font-semibold rounded-xl"></button> */}
+      <StarBorder
         onClick={(e) => handleSignInGoogle(e)}
-        className="px-3 py-2 bg-[#045AA6] text-white font-semibold rounded-xl"
+        as="button"
+        className="custom-class m-2"
+        color="cyan"
+        speed="5s"
       >
         {description}
-      </button>
+      </StarBorder>
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { Box, Lock, Search, Settings, Sparkles } from "lucide-react";
+import { FolderOpen,Forward , Share2, CloudUpload, Search, Navigation} from "lucide-react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 export function GlowingEffectDemo() {
@@ -6,42 +6,42 @@ export function GlowingEffectDemo() {
     <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2">
       <GridItem
         area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]"
-        icon={<Box className="h-4 w-4  text-neutral-400" />}
+        icon={<FolderOpen className="h-4 w-4  text-neutral-400" />}
         title="Workspace and Collection Management"
         description="Create, organize workspaces, collections for efficient project and code management."
       />
 
       <GridItem
         area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
-        icon={<Settings className="h-4 w-4  text-neutral-400" />}
+        icon={<CloudUpload className="h-4 w-4  text-neutral-400" />}
         title="Effortless Snippet Storage"
         description="Unlimited code snippets saved per collection for easy access."
       />
 
       <GridItem
         area="md:[grid-area:2/1/3/7] xl:[grid-area:1/5/2/9]"
-        icon={<Lock className="h-4 w-4  text-neutral-400" />}
+        icon={<Navigation className="h-4 w-4  text-neutral-400" />}
         title="Intuitive Navigation"
         description="Smooth transition between workspaces and collections for streamlined management."
       />
 
       <GridItem
         area="md:[grid-area:2/1/3/7] xl:[grid-area:2/5/3/9]"
-        icon={<Lock className="h-4 w-4  text-neutral-400" />}
+        icon={<Search className="h-4 w-4  text-neutral-400" />}
         title="Global Search Functionality"
         description="Powerful search across all workspaces and collections for code retrieval."
       />
 
       <GridItem
         area="md:[grid-area:2/7/3/13] xl:[grid-area:1/9/2/13]"
-        icon={<Sparkles className="h-4 w-4  text-neutral-400" />}
+        icon={<Share2 className="h-4 w-4  text-neutral-400" />}
         title="Collaborative Workspace Sharing"
         description="Share workspaces with team members for seamless project collaboration."
       />
 
       <GridItem
         area="md:[grid-area:3/1/4/13] xl:[grid-area:2/9/3/13]"
-        icon={<Search className="h-4 w-4  text-neutral-400" />}
+        icon={<Forward className="h-4 w-4  text-neutral-400" />}
         title="Flexible Sharing Options"
         description="Share snippets via links or email for easy collaboration."
       />
