@@ -7,7 +7,6 @@ const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
 });
-
 // export const metadata = {
 //   title: "Snipix",
 //   description:
@@ -27,7 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <html className="scroll-smooth">
       <Head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico"/>
       </Head>
       <body
         className={cn(
