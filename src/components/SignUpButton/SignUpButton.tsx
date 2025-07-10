@@ -15,6 +15,7 @@ export function SignUpButton({ description }: ButtonProps) {
   const router = useRouter();
   const session = useSession();
   const [isLoading, setIsLoading] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   useLayoutEffect(() => {
     const CreateUser = async () => {
@@ -46,18 +47,25 @@ export function SignUpButton({ description }: ButtonProps) {
   const handleSignInGoogle = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
-    signIn("google");
+    setIsDisabled(true);
+     try {
+    await signIn("google");
+  } finally {
+    // Optionally re-enable after some time or based on logic
+    setTimeout(() => setIsDisabled(false), 3000); // Re-enable after 3s
+  }
   };
   return (
     <>
       {isLoading && <LoadingSpinner />}
       {/* <button className="px-3 py-2 bg-[#045AA6] text-white font-semibold rounded-xl"></button> */}
       <StarBorder
-        onClick={(e) => handleSignInGoogle(e)}
+        // onClick={(e) => handleSignInGoogle(e)}
         as="button"
         className="custom-class "
         color="cyan"
         speed="5s"
+         disabled={isDisabled}
       >
         {description}
       </StarBorder>

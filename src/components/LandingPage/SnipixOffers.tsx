@@ -13,8 +13,8 @@ export default function SnipixOffers() {
           </h2>
           <p className="mx-auto max-w-[700px] text-secondary md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed"></p>
         </div>
-        <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
-      <div className="">
+        <div className=""></div>
+      <div className=" grid w-full ">
         <BentoGridDemo />
       </div>
     </>
