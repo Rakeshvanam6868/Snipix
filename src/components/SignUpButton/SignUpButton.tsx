@@ -60,14 +60,14 @@ export function SignUpButton({ description }: ButtonProps) {
       {isLoading && <LoadingSpinner />}
       {/* <button className="px-3 py-2 bg-[#045AA6] text-white font-semibold rounded-xl"></button> */}
       <StarBorder
-        // onClick={(e) => handleSignInGoogle(e)}
+        onClick={(e) => handleSignInGoogle(e)}
         as="button"
         className="custom-class "
         color="cyan"
         speed="5s"
          disabled={isDisabled}
       >
-        {description}
+        {description}     
       </StarBorder>
     </>
   );

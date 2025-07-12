@@ -16,7 +16,7 @@ const SearchParamsHandler = ({closeGlobalSearch}: SearchParam) => {
       const token = localStorage.getItem("token");
       const headers = {
         Authorization: `Bearer ${token}`,
-      };
+      };    
       await axios
         .get(`${baseURL}/v1/api/snippet/global?text=${inpText}`, { headers })
         .then((response) => {

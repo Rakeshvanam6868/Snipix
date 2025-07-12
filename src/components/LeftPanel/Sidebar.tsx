@@ -140,7 +140,7 @@ const Sidebar = () => {
 
   const handleLogOut = () => {
     localStorage.removeItem("token");
-    signOut({ callbackUrl: "https://snipsavvy.vercel.app/" });
+    signOut({ callbackUrl: "https://snipix.vercel.app/" });
   };
 
   const updateUrl = (name: string) => {
