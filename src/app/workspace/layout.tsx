@@ -11,7 +11,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="bg-[#18181B] min-h-screen w-screen flex">
       <div className="w-[25vw] flex">
         {/* Sidebar content goes here */}
-        <Sidebar1/>
+        <Sidebar/>
       </div>
 
       {children}
