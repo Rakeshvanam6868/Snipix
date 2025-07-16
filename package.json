@@ -29,7 +29,7 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@tabler/icons-react": "^3.34.0",
     "@types/prismjs": "^1.26.3",
-    "axios": "^1.6.8",
+    "axios": "^1.10.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.6.1",
