@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { baseURL } from "@/config";
+import { Plus } from "lucide-react";
 
 export default function Modal({ fetchWorkspace }: any) {
   const [open, setOpen] = React.useState(false);
@@ -59,8 +60,9 @@ export default function Modal({ fetchWorkspace }: any) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="hover:bg-zinc-600 hover:rounded duration-300 font-bold text-3xl ">
-          +
+        <Button className="w-full justify-start bg-blue-800 hover:bg-blue-900 text-white rounded-xl px-3 py-2 text-sm mb-4">
+          <Plus className="mr-2 w-4 h-4" />
+          Add Workspace
         </Button>
       </DialogTrigger>
       <DialogContent

@@ -190,7 +190,7 @@ const Collection = () => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="w-[20vw] bg-[#1a1b1c] overflow-none">
+      <div className="w-[20vw] ml-9 bg-[#1a1b1c] overflow-none">
         <div>
           <div className="flex m-8 items-center justify- ">
             <div className="mr-3 text-gray-400  ">

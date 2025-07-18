@@ -28,6 +28,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { signOut, useSession } from "next-auth/react";
 import { Skeleton } from "@mui/material";
+import Modal from "./Modal";
+import Collection from "./Collection";
+
 // Mock dat
 
 export default function Sidebar() {
@@ -243,7 +246,7 @@ export default function Sidebar() {
         <div className="font-semibold text-lg mb-4">Snipix</div>
 
         {/* Add Workspace Button */}
-        <Dialog>
+        {/* <Dialog>
           <DialogTrigger asChild>
             <Button className="w-full justify-start bg-blue-800 hover:bg-blue-900 text-white rounded-xl px-3 py-2 text-sm mb-4">
               <Plus className="mr-2 w-4 h-4" />
@@ -265,7 +268,10 @@ export default function Sidebar() {
               Create
             </Button>
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
+        <div className="">
+          <Modal fetchWorkspace={fetchWorkspace} />
+        </div>
 
         {/* Search Input */}
         <div className="relative mb-2">
@@ -322,6 +328,47 @@ export default function Sidebar() {
               </div>
             )}
           </div>
+          <div className="space-y-0 mr-2">
+            {!isDataLoading ? (
+              sharedWorkspace?.map((workspace: any, i: number) => {
+                 return (
+                  <div
+                    onClick={() => updateUrl(workspace.workspace_id)}
+                    onContextMenu={(e) =>
+                      handleRightClick(e, i, workspace, "shared")
+                    }
+                    key={workspace.workspace_id}
+                    className={`mb-1 hover:bg-zinc-800 rounded-xl text-white cursor-pointer ${
+                      selectedWorkspace === workspace?.workspace_name ? "bg-zinc-800" : ""
+                    }`}
+                  >
+                    <SidebarItem label={workspace?.workspace_name} />
+                  </div>
+                );
+              })
+            ) : (
+               <div className="flex flex-col gap-2 mt-2">
+                <Skeleton
+                  sx={{ bgcolor: "grey.700", borderRadius: "10px" }}
+                  variant="rectangular"
+                  width="100%"
+                  height={30}
+                />
+                <Skeleton
+                  sx={{ bgcolor: "grey.700", borderRadius: "10px" }}
+                  variant="rectangular"
+                  width="100%"
+                  height={30}
+                />
+                <Skeleton
+                  sx={{ bgcolor: "grey.700", borderRadius: "10px" }}
+                  variant="rectangular"
+                  width="100%"
+                  height={30}
+                />
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Shared Section */}
@@ -340,13 +387,11 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* <Collection1
-        selectedWorkspace={selectedWorkspace}
-        setSelectedWorkspace={setSelectedWorkspace}
-        // searchQuery={searchQuery}
-        // setSearchQuery={setSearchQuery}
-        // workspaces={workspaces}
-      /> */}
+      <Collection1
+         selectedWorkspace={selectedWorkspace}
+         setSelectedWorkspace={setSelectedWorkspace}
+         workspaces={workspace}
+      />
     </>
   );
 }
