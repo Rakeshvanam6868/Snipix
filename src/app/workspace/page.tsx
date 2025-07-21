@@ -115,8 +115,8 @@ const WorkspacePage: React.FC = () => {
           style={{ width: "75vw" }}
           className="fixed top-0   pr-3 flex flex-col justify-between items-start bg-zinc-900  py-4"
         >
-          <div className="flex w-full justify-end">
-            <div className="flex w-full border-b-1 border-gray-700 shadow-md">
+          <div className="flex w-full align-center justify-center">
+            <div className="flex w-2/3 items-center justify-center rounded-full bg-zinc-800 border p-2 gap-2 border-zinc-100 shadow-md">
               <div className=" ml-6 px-2 h-10 flex items-center rounded-l">
                 <SearchIcon />
               </div>
@@ -203,25 +203,25 @@ const WorkspacePage: React.FC = () => {
               )}
               <input
                 type="text"
-                className="w-full h-10 vh-5 bg-zinc-900 px-4 hover:shadow-outline focus:outline-none rounded-r text-lg text-gray-600 placeholder-gray-500 font-mono"
+                className="w-full h-10 bg-zinc-800 px-4 hover:shadow-outline focus:outline-none rounded-r text-lg text-zinc-100 placeholder-zinc-100 font-mono"
                 placeholder="Find by Tag, Description , title..."
                 onClick={handleOpen}
               />
               <div
                 onClick={handleOpen}
-                className="px-4 py-2 rounded-xl mb-2 flex   items-center text-xs text-gray-600 border-2 border-gray-600 shadow-lg   w-fit"
+                className="px-4 py-2 rounded-xl  flex   items-center text-xs text-zinc-100 border-2 border-zinc-200 shadow-lg   w-fit"
               >
                 <span>CTRL+K</span>
               </div>
-              <div className="w-2/12 vh-6 flex justify-between pl-6 items-center">
+              <div className="w-2/12 vh-6 flex justify-between gap-2 pl-6 items-center">
                 <button
-                  className="bg-blue-600 hover:bg-blue-400 duration-300 rounded-xl text-xl px-3 py-2 mb-2 text-white"
+                  className="bg-blue-600 hover:bg-blue-400 duration-300 rounded-xl text-xl px-3 py-2 text-white"
                   onClick={handleAdd}
                 >
                   <IoIosAdd />
                 </button>
                 <button
-                  className="bg-blue-600 hover:bg-blue-400 duration-300 rounded-xl text-xl px-3 py-2 mb-2 text-white"
+                  className="bg-blue-600 hover:bg-blue-400 duration-300 rounded-xl text-xl px-3 py-2 text-white"
                   onClick={toggleRefresh}
                 >
                   <RiRefreshLine />

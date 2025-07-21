@@ -145,11 +145,11 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div
-        className={`flex relative border-zinc-800  ${snippet_id == _id ? "bg-zinc-950 border-zinc-300" : "hover:bg-zinc-950 hover:border-zinc-300"} border-transparent shadow-xl overflow-hidden mb-6 mr-4 p-3 transition-border duration-500 rounded-xl`}
+        className={`flex relative border border-zinc-100  ${snippet_id == _id ? "bg-zinc-800 border-zinc-300" : "hover:bg-zinc-950 hover:border-zinc-300"} border-transparent shadow-xl overflow-hidden mb-6 mr-4 p-3 transition-border duration-500 rounded-xl`}
       >
         <div
           onClick={() => updateUrl(_id)}
-          className={`flex items-start border-zinc-800 rounded-lg ${snippet_id == _id ? "bg-zinc-950 border-zinc-300" : ""} border-transparent  `}
+          className={`flex items-start  border-zinc-100 rounded-lg ${snippet_id == _id ? "bg-zinc-800 border-zinc-300" : ""} border-transparent  `}
           style={{
             width: "18vw",
             height: "26vh",
