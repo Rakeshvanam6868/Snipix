@@ -223,7 +223,7 @@ export default function Sidebar() {
           ) : (
             <div className="w-full flex justify-center">
               <Image
-                src="/Logo.png"
+                src="/logo.png"
                 alt="Snipix Logo"
                 width={100}
                 height={100}
