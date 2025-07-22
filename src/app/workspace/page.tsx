@@ -105,15 +105,15 @@ const WorkspacePage: React.FC = () => {
   return (
     <div>
       <Suspense fallback={<div>Loading...</div>}>
-        <SearchParamsHandler closeGlobalSearch={()=>handleClose()}/>
+        {/* <SearchParamsHandler closeGlobalSearch={()=>handleClose()}/> */}
       </Suspense>
       <div
-        style={{ width: "75vw" }}
-        className="fixed top-0 right-0 h-screen text-white bg-zinc-900"
+        // style={{ width: "75vw" }}
+        className="fixed w-10/12 top-0 right-0 h-screen text-white bg-zinc-900"
       >
         <div
-          style={{ width: "75vw" }}
-          className="fixed top-0   pr-3 flex flex-col justify-between items-start bg-zinc-900  py-4"
+          // style={{ width: "75vw" }}
+          className="fixed top-0 w-10/12  pr-3 flex flex-col justify-between items-start bg-zinc-900  py-4"
         >
           <div className="flex w-full align-center justify-center">
             <div className="flex w-2/3 items-center justify-center rounded-full bg-zinc-800 border p-2 gap-2 border-zinc-100 shadow-md">
