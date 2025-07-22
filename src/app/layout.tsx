@@ -3,6 +3,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Head from "next/head";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -40,7 +41,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="">
             <div className=" items-center min-h-screen bg-black">
               <div>
+                <TooltipProvider>
                 <AuthProvider>{children}</AuthProvider>
+                </TooltipProvider>
               </div>
             </div>
           </div>
