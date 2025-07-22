@@ -14,9 +14,9 @@ import {
 
 interface Props {
   isOpen: boolean;
-  setIsOpen: any;
+  setIsOpen: (v: boolean) => void;
   isEditable: boolean;
-  setIsEditable: any;
+  setIsEditable: (v: boolean) => void;
   className: string;
   shared: any;
 }
@@ -51,13 +51,21 @@ const RightDrawer = ({
   const closeDrawer = () => {
     const nextParams = new URLSearchParams(searchParams.toString());
     if (add) nextParams.delete("add");
+    if (snippet) nextParams.delete("snippet");
+    if (edit) nextParams.delete("edit");
     router.push(`${pathName}?${nextParams.toString()}`);
+    setIsOpen(false);
+    setIsEditable(false);
   };
 
   // DELETE THIS BLOCK
   useEffect(() => {
-    if (snippet) setIsOpen(true);
-  }, [snippet, setIsOpen]);
+   if (snippet || add === "true") {
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    } 
+  }, [snippet, add, setIsOpen]);
 
   const shouldShowDrawer = Boolean(snippet) || add === "true";
 
