@@ -160,7 +160,7 @@ const Collection1 = ({
       className={`fixed left-0  top-0 z-10 w-[260px] h-screen bg-[#141415] text-white border-1 border-zinc-100 px-4 py-4 transition-transform duration-300 ease-in-out transform ${
         selectedWorkspace ? "translate-x-full" : "-translate-x-full"
       }
-       ${isSidebarOpen ? "translate-x-full" : "translate-x-16"} 
+       ${isSidebarOpen ? "translate-x-full" : "translate-x-[64px]"} 
       `}
     >
       <div className="flex items-center justify-between mb-4">
