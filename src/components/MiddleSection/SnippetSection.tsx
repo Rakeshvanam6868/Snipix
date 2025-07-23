@@ -65,17 +65,13 @@ const SnippetSection: React.FC<SnippetSectionProps> = ({ isRefresh }) => {
             style={{ height: "100vh" }}
             className="h-screen-full w-full overflow-y-auto"
           >
-            <div className={`${snippet ? "w-1/3 " : "vw-75"} flex flex-col `}>
-              <div className="w-full flex mt-2">
-                <div className="w-full flex flex-wrap">
-                  <div className="flex flex-wrap justify-start pb-20">
-                    {isSnippet?.map((snip: any) => (
-                      <button key={snip._id}>
-                        <SnippetCard {...snip} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
+            <div className={`w-full flex flex-col `}>
+              <div className="w-full grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {isSnippet?.map((snip: any) => (
+                  <button key={snip._id}>
+                    <SnippetCard {...snip} />
+                  </button>
+                ))}
               </div>
             </div>
           </div>

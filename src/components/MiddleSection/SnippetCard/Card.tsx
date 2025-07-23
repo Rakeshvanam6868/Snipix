@@ -1,17 +1,31 @@
-import React, { Suspense } from "react";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+// components/MiddleSection/SnippetCard.tsx (or your relevant path)
+"use client"; // Important for client-side interactivity
+
+import React, { Suspense, useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
 import { FaShareAlt } from "react-icons/fa";
 import ShareSnippet from "@/components/RightDrawer/ShareSnippet";
 import DeleteSnippet from "./DeleteSnippet";
 import { MdEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
+
+// Import Shadcn UI Components
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  // CardTitle, // Might not be needed if title is handled directly
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+// Import Lucide React Icon
+import { MoreVertical } from "lucide-react";
+
 interface SnippetCardProps {
   title: string;
   code: string;
-  description: string;
+  // description: string; // Seems unused in current logic, commented out
   tags: (
     | "C++"
     | "Python"
@@ -27,100 +41,25 @@ interface SnippetCardProps {
 const SnippetCard: React.FC<SnippetCardProps> = ({
   title,
   code,
+  // description, // Unused
   tags,
   _id,
 }) => {
-  const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
+  // State for controlling the dropdown menu visibility
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [deleteSnippetOpen, setDeleteSnippetOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  });
+  // Ref for the dropdown trigger button to position the menu
+  const dropdownTriggerRef = useRef<HTMLButtonElement>(null);
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target as Node) &&
-      !isDropdownButton(event.target as Node)
-    ) {
-      setIsDropdownOpen(false);
-    }
-  };
-
-  const isDropdownButton = (target: Node) => {
-    return (
-      target instanceof Node &&
-      dropdownRef.current &&
-      dropdownRef.current.contains(target)
-    );
-  };
-  const handleRightClick = (
-    e: React.MouseEvent<HTMLDivElement>,
-    _id: string
-  ) => {
-    e.preventDefault();
-    setDropdownPosition({ x: e.clientX, y: e.clientY });
-    setIsDropdownOpen(true);
-  };
-  const closeDropdown = () => {
-    setIsDropdownOpen(false);
-  };
-  const newUpdateUrl = () => {
-        const workspace = searchParams.get("workspace") || "";
-        const collection = searchParams.get("collection") || "";
-        const query: Record<string, string> = {
-          workspace,
-          collection,
-        };
-        query.snippet = _id;
-        query.edit = "true";
-        Router.push(`?${new URLSearchParams(query).toString()}`);
-      };
-  
-  const handleOptionClick = (option: string) => {
-    console.log("Option clicked:", option);
-    switch (option) {
-      case "edit":
-        console.log("Edit clicked");
-         newUpdateUrl();
-         isDropdownOpen && closeDropdown();
-        break;
-      case "delete":
-        console.log("Delete clicked");
-        setDeleteSnippetOpen(true);
-        break;
-      case "share":
-        console.log("Share clicked");
-        setShareSnippet(true);
-        break;
-      default:
-        break;
-    }
-  };
-  
-  const languageIcon =
-    "https://img.icons8.com/?size=50&id=22183&format=png&color=808080";
-
-  const languages = {
-    Python: "/icon_py.png",
-    JavaScript: "/icon_js.png",
-    Java: "/icon_java.png",
-    TypeScript: "/icon_ts.png",
-    "C++": "/icon_cpp.png",
-    React: "/icon_react.png",
-    Node: "/icon_node.png",
-  };
-  const Router = useRouter();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const snippet_id = searchParams.get("snippet") || "";
-  console.log("snippet_id=>", snippet_id);
-  console.log("id=>", _id);
+
   const [shareSnippet, setShareSnippet] = useState(false);
 
+  // --- Logic functions (kept mostly the same) ---
+
+  // Function to update the URL when a snippet is selected
   const updateUrl = (id: string) => {
     const workspace = searchParams.get("workspace") || "";
     const collection = searchParams.get("collection") || "";
@@ -131,206 +70,216 @@ const SnippetCard: React.FC<SnippetCardProps> = ({
     if (id) {
       query.snippet = id;
     }
-    Router.push(`?${new URLSearchParams(query).toString()}`);
+    // Use replace to avoid adding to browser history on selection
+    router.replace(`?${new URLSearchParams(query).toString()}`);
   };
 
- 
+  // Function to update the URL for editing
+  const newUpdateUrlForEdit = () => {
+    const workspace = searchParams.get("workspace") || "";
+    const collection = searchParams.get("collection") || "";
+    const query: Record<string, string> = {
+      workspace,
+      collection,
+    };
+    query.snippet = _id;
+    query.edit = "true";
+    router.push(`?${new URLSearchParams(query).toString()}`); // Use push for navigation to edit
+  };
 
-  const lang_icon = tags[0];
-  const handleClose = () => {
-        // setAnchorEl(null);
-        setShareSnippet(false);
-      };
+  // Handler for dropdown menu options
+  const handleOptionClick = (option: string) => {
+    console.log("Option clicked:", option);
+    switch (option) {
+      case "edit":
+        console.log("Edit clicked");
+        newUpdateUrlForEdit();
+        setIsDropdownOpen(false); // Close dropdown after action
+        break;
+      case "delete":
+        console.log("Delete clicked");
+        setDeleteSnippetOpen(true);
+        setIsDropdownOpen(false); // Close dropdown after action
+        break;
+      case "share":
+        console.log("Share clicked");
+        setShareSnippet(true);
+        setIsDropdownOpen(false); // Close dropdown after action
+        break;
+      default:
+        break;
+    }
+  };
+
+  // --- Icon Handling (kept mostly the same) ---
+  const languageIcon =
+    "https://img.icons8.com/?size=50&id=22183&format=png&color=808080";
+  const languages: Record<string, string> = {
+    Python: "/icon_py.png",
+    JavaScript: "/icon_js.png",
+    Java: "/icon_java.png",
+    TypeScript: "/icon_ts.png",
+    "C++": "/icon_cpp.png",
+    React: "/icon_react.png",
+    Node: "/icon_node.png",
+  };
+  const lang_icon = tags[0]; // Get the first tag for the icon
+
+  // Handler to close the share snippet modal
+  const handleCloseShare = () => {
+    setShareSnippet(false);
+  };
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div
-        className={`flex relative border border-zinc-100  ${snippet_id == _id ? "bg-zinc-800 border-zinc-300" : "hover:bg-zinc-950 hover:border-zinc-300"} border-transparent shadow-xl overflow-hidden mb-6 mr-4 p-3 transition-border duration-500 rounded-xl`}
+      {/* Use Shadcn Card for structure */}
+      <Card
+        className={`relative overflow-visible mb-3 mr-2 transition-all duration-200 ease-in-out
+          ${
+            snippet_id === _id
+              ? "bg-zinc-800 border-zinc-600 shadow-md" // Selected state
+              : "bg-zinc-900 border-zinc-800 hover:bg-zinc-800/70 hover:border-zinc-700 hover:shadow-sm" // Default & hover state
+          }`}
+        onClick={() => updateUrl(_id)} // Click handler on the card itself
       >
-        <div
-          onClick={() => updateUrl(_id)}
-          className={`flex items-start  border-zinc-100 rounded-lg ${snippet_id == _id ? "bg-zinc-800 border-zinc-300" : ""} border-transparent  `}
-          style={{
-            width: "18vw",
-            height: "26vh",
-            borderRadius: "0.6rem",
-            gap: "11px",
-            marginLeft: "2px",
-          }}
-        >
-          <div className="flex items-center mr-2 text-gray-200">
-            <Image
-              src={languages[lang_icon] || languageIcon}
-              alt="Icon"
-              className="mt-1"
-              width={25}
-              height={25}
-            />
-          </div>
-          <div className="flex flex-col justify-start w-full">
-            <div className="text-2xl text-start font-semibold font-mono text-gray-300 mb-2">
+        <CardHeader className="p-3 pb-2">
+          {" "}
+          {/* Reduced padding */}
+          <div className="flex items-start">
+            {/* Language Icon {`${lang_icon || 'Language'} Icon`} */}
+            <div className="flex items-center mr-2 mt-1 flex-shrink-0">
+              <Image
+                src={languages[lang_icon] || languageIcon}
+                alt=""
+                className=""
+                width={18}
+                height={18}
+              />
+            </div>
+            {/* Title */}
+            <h3 className="text-base font-semibold truncate text-zinc-100">
+              {" "}
+              {/* Adjusted font size and weight */}
               {title}
-            </div>
-            <div className="text-md text-start font-semibold leading-7 text-gray-400 pt-2 pb-2 ">
-              {code.substring(0, 60)}
-            </div>
-            <div className="flex  flex-wrap mt-2">
-              {tags.slice(0, 3).map((tag, index) => (
+            </h3>
+            {/* Dropdown Menu Trigger - Positioned at the end */}
+            <div className="ml-auto flex-shrink-0">
+              {/* Use Button from shadcn/ui for the trigger */}
+              <Button
+                ref={dropdownTriggerRef} // Attach ref for positioning if needed (though shadcn usually handles it)
+                variant="ghost" // Ghost variant for a subtle button
+                size="sm" // Smaller size
+                className="h-8 w-8 p-0 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700/50 rounded-md" // Custom styling
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent card click when clicking the menu button
+                  setIsDropdownOpen(!isDropdownOpen); // Toggle dropdown
+                }}
+                aria-label="More options"
+              >
+                <MoreVertical className="h-4 w-4" /> {/* Lucide icon */}
+              </Button>
+
+              {/* Conditional rendering of the dropdown menu based on isDropdownOpen */}
+              {isDropdownOpen && (
                 <div
-                  key={index}
-                  className="bg-blue-100 text-blue-800 rounded-full py-1 px-3 text-sm font-medium mr-2 mb-2"
+                  // Improved styling and positioning for visibility outside card
+                  className="absolute z-50 ml-10 mt-1 w-40 rounded-md border border-zinc-700 bg-zinc-900  shadow-lg" // Darker background, border, shadow
+                  style={{
+                    // Ensure it appears below the trigger button, slightly offset
+                    top: dropdownTriggerRef.current
+                      ? `${dropdownTriggerRef.current.offsetTop + dropdownTriggerRef.current.offsetHeight + 5}px`
+                      : "auto",
+                    right: "0px", // Align to the right edge of the parent relative container
+                  }}
                 >
-                  {tag}
+                  <div className="flex flex-col">
+                    {/* Edit Button - Blue Theme */}
+                    <button
+                      className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm cursor-pointer w-full text-left text-gray-400 hover:bg-gray-500/20 transition-colors duration-150" // Blue text, light blue hover bg
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOptionClick("edit");
+                      }}
+                    >
+                      <span>Edit</span>
+                      <MdEdit className="h-4 w-4" />
+                    </button>
+                    {/* Delete Button - Red Theme */}
+                    <button
+                      className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm cursor-pointer w-full text-left text-red-400 hover:bg-red-500/20 transition-colors duration-150" // Red text, light red hover bg
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOptionClick("delete");
+                      }}
+                    >
+                      <span>Delete</span>
+                      <MdDelete className="h-4 w-4" />
+                    </button>
+                    {/* Share Button - Blue Theme (or choose another) */}
+                    <button
+                      className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm cursor-pointer w-full text-left text-blue-400 hover:bg-blue-500/20 transition-colors duration-150" // Blue text, light blue hover bg
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOptionClick("share");
+                      }}
+                    >
+                      <span>Share</span>
+                      <FaShareAlt className="h-3 w-3" />
+                    </button>
+                  </div>
                 </div>
-              ))}
+              )}
             </div>
           </div>
-        </div>
-        <div className="ml-auto">
-          <div
-            onContextMenu={(e) => handleRightClick(e, _id)}
-            className="rounded-full h-10 w-10 flex items-center justify-center border-zinc-700 hover:border-zinc-400"
-          >
-            <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}><MoreVertIcon /></button>
-            
-            {isDropdownOpen && (
-              <div
-                ref={dropdownRef}
-                style={{
-                  position: "fixed",
-                  padding: "10px",
-                  top: dropdownPosition.y,
-                  left: dropdownPosition.x,
-                  backgroundColor: "black",
-                  borderRadius: "4px",
-                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-                  backdropFilter: "blur(3px)",
-                  zIndex: 9999,
-                }}
-                onBlur={() => closeDropdown()}
+        </CardHeader>
+        <CardContent className="p-3 pt-0">
+          {/* Code Preview */}
+          <p className="text-xs text-zinc-400 mb-2 line-clamp-2">
+            {" "}
+            {/* Smaller text, line clamp */}
+            {code.substring(0, 100)} {/* Adjust substring length if needed */}
+          </p>
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1">
+            {tags.slice(0, 3).map((tag, index) => (
+              <span
+                key={index}
+                className="inline-flex items-center rounded-full bg-blue-900/30 text-blue-300 text-xs px-2 py-0.5" // Notion-like tag style
               >
-                <ul className="w-20">
-                  <li
-                    className="cursor-pointer flex justify-between hover:bg-slate-300 hover:text-black p-1 rounded"
-                    onClick={() => handleOptionClick("edit")}
-                  >
-                    Edit <MdEdit className="mt-1" />
-                  </li>
-                  <li
-                    className="cursor-pointer flex justify-between hover:bg-slate-300 hover:text-black p-1 rounded"
-                    onClick={() => handleOptionClick("delete")}
-                  >
-                    Delete <MdDelete className="mt-1" />
-                  </li>
-                  <li
-                    className="cursor-pointer flex justify-between hover:bg-slate-300 hover:text-black p-1 rounded"
-                    onClick={() => handleOptionClick("share")}
-                  >
-                    Share <FaShareAlt className="mt-1" />
-                  </li>
-                </ul>
-              </div>
+                {tag}
+              </span>
+            ))}
+            {tags.length > 3 && (
+              <span className="inline-flex items-center rounded-full bg-zinc-700 text-zinc-400 text-xs px-2 py-0.5">
+                +{tags.length - 3}
+              </span>
             )}
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
+
+      {/* Modals - Logic kept the same */}
       {deleteSnippetOpen && (
         <DeleteSnippet
           open={deleteSnippetOpen}
           onClose={() => setDeleteSnippetOpen(false)}
-          snippet_id={_id || ""}
+          snippet_id={_id}
         />
       )}
       {shareSnippet && (
-            <ShareSnippet snippet_id={_id} onClose={() => handleClose()} />
-          )}
+        <ShareSnippet snippet_id={_id} onClose={handleCloseShare} />
+      )}
+
+      {/* Click outside to close dropdown (optional, can be refined) */}
+      {/* This is a basic implementation. Consider using a more robust solution or shadcn's built-in features if using Popover/DropdownMenu */}
+      {isDropdownOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-transparent"
+          onClick={() => setIsDropdownOpen(false)}
+        />
+      )}
     </Suspense>
   );
 };
 
 export default SnippetCard;
-
-
-
- // const BasicPopover: React.FC<{}> = () => {
-  //   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-  //     null
-  //   );
-
-  //   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-  //     setAnchorEl(event.currentTarget);
-  //   };
-
-  //   const handleClose = () => {
-  //     setAnchorEl(null);
-  //     setShareSnippet(false);
-  //   };
-  //   const newUpdateUrl = () => {
-  //     const workspace = searchParams.get("workspace") || "";
-  //     const collection = searchParams.get("collection") || "";
-  //     const query: Record<string, string> = {
-  //       workspace,
-  //       collection,
-  //     };
-  //     query.snippet = _id;
-  //     query.edit = "true";
-  //     Router.push(`?${new URLSearchParams(query).toString()}`);
-  //   };
-
-  //   const open = Boolean(anchorEl);
-  //   const id = open ? "simple-popover" : undefined;
-  //   const [deleteSnippetOpen, setDeleteSnippetOpen] = useState(false);
-  //   return (
-  //     <Suspense fallback={<div>Loading...</div>}>
-  //       <div>
-  //         <Button aria-describedby={id} onClick={handleClick}>
-  //           <MoreVertIcon />
-  //         </Button>
-  //         <Popover
-  //           id={id}
-  //           open={open}
-  //           anchorEl={anchorEl}
-  //           onClose={handleClose}
-  //           anchorOrigin={{
-  //             vertical: "bottom",
-  //             horizontal: "left",
-  //           }}
-  //         >
-  //           <Typography sx={{ width: 75, height: 95 }} className="no-scrollbar">
-  //             <div className="z-200 flex flex-col bg-zinc-950 p-2 absolute w-[10-vw] text-white">
-  //               <button
-  //                 className="bg-zinc-700 px-2 mb-1 hover:bg-zinc-800"
-  //                 onClick={(e) => setDeleteSnippetOpen(true)}
-  //               >
-  //                 Delete
-  //                 {deleteSnippetOpen && (
-  //                   <DeleteSnippet
-  //                     open={deleteSnippetOpen}
-  //                     onClose={() => setDeleteSnippetOpen(false)}
-  //                     snippet_id={_id || ""}
-  //                   />
-  //                 )}
-  //               </button>
-  //               <button
-  //                 onClick={() => newUpdateUrl()}
-  //                 className="bg-zinc-700 px-2 mb-1 hover:bg-zinc-800"
-  //               >
-  //                 Edit
-  //               </button>
-  //               <button
-  //                 onClick={() => setShareSnippet(true)}
-  //                 className="bg-zinc-700 px-2 hover:bg-zinc-800"
-  //               >
-  //                 share
-  //               </button>
-  //             </div>
-  //           </Typography>
-  //         </Popover>
-
-  //         {shareSnippet && (
-  //           <ShareSnippet snippet_id={_id} onClose={() => handleClose()} />
-  //         )}
-  //       </div>
-  //     </Suspense>
-  //   );
-  // };

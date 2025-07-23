@@ -1,13 +1,28 @@
+// ShareSnippet.tsx (or .jsx)
 "use client";
+
 import React, { useState } from "react";
-import { LuSendHorizonal } from "react-icons/lu";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { LuCopyPlus } from "react-icons/lu";
-import { MdCancel } from "react-icons/md";
 import { useSession } from "next-auth/react";
 import { baseURL } from "@/config";
 import axios from "axios";
+
+// Import shadcn/ui components
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose, // Import DialogClose
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+
+// Import Icons (make sure you have react-icons installed)
+import { LuSendHorizonal, LuCopyPlus } from "react-icons/lu";
+import { MdClose } from "react-icons/md"; // Use MdClose for a cleaner 'X' icon
 
 interface ModalProps {
   onClose: () => void;
@@ -17,81 +32,132 @@ interface ModalProps {
 const ShareSnippet = ({ onClose, snippet_id }: ModalProps) => {
   const session = useSession();
   const [email, setEmail] = useState("");
-  const sendEmail = async (e: any) => {
+
+  const sendEmail = async (e: React.FormEvent) => { // Type the event correctly
     e.preventDefault();
-    const token = localStorage.getItem("token");
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-    const body = {
-      email,
-      snippetid: snippet_id,
-      user_name: session.data?.user?.name,
-    };
-    console.log("Share Snippet Body =>", body);
-    await axios
-      .put(`${baseURL}/v1/api/snippet/share`, body, { headers })
-      .then((response) => {
-        toast.success("Email sent successfully!");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    if (!email) { // Basic validation
+        toast.error("Please enter an email address.");
+        return;
+    }
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+          toast.error("Authentication token not found.");
+          return;
+      }
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      const body = {
+        email,
+        snippetid: snippet_id,
+        user_name: session.data?.user?.name,
+      };
+      console.log("Share Snippet Body =>", body);
+      await axios.put(`${baseURL}/v1/api/snippet/share`, body, { headers });
+      toast.success("Email sent successfully!");
+      setEmail(""); // Clear the input after successful send
+    } catch (error: any) { // Type the error
+      console.error("Error sending email:", error);
+      // Provide more specific error messages if possible from your API
+      if (error.response?.status === 404) {
+         toast.error("Snippet not found.");
+      } else if (error.response?.status === 400) {
+         toast.error("Invalid email address.");
+      } else {
+        toast.error("Failed to send email. Please try again.");
+      }
+    }
   };
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
       toast.success("Link copied to clipboard");
+    }).catch((err) => {
+       console.error("Failed to copy link: ", err);
+       toast.error("Failed to copy link.");
     });
   };
+
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-black rounded-lg p-4 h-96 w-1/3">
-        <button
-          className="absolute top-2 right-2 text-white text-2xl"
-          onClick={onClose}
-        >
-          <MdCancel />
-        </button>
-        <h2 className="text-xl font-bold mb-4 text-white">Share Snippet</h2>
-        <form className="mb-8 py-8">
-          <label
-            htmlFor="email"
-            className="block mb-2 text-white font-semibold"
-          >
-            Recipient Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-300 px-3 py-1 rounded-l-md w-[85%] text-black"
-            required
-          />
-          <button
-            className="border translate-y-0.5 hover:bg-zinc-600 duration-300 rounded-r-md p-2 border-zinc-100"
-            type="submit"
-            onClick={(e) => sendEmail(e)}
-          >
-            <LuSendHorizonal />
-          </button>
+    // Use shadcn Dialog component
+    <Dialog open onOpenChange={(isOpen) => !isOpen && onClose()}> {/* Handle close via backdrop click or X */}
+      <DialogContent className="sm:max-w-md bg-zinc-900 border border-zinc-700 text-white"> {/* Apply dark theme styles */}
+        {/* Dialog Header */}
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold text-white">Share Snippet</DialogTitle>
+          {/* Dialog Close Button - integrated into header */}
+          {/* <DialogClose asChild>
+            <Button
+              variant="ghost" // Use ghost variant for a subtle close button
+              size="icon"
+              className="absolute right-4 top-4 h-6 w-6 p-0 text-white hover:bg-zinc-700 hover:text-white rounded-full" // Style the close button
+            >
+              <MdClose className="h-5 w-5" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </DialogClose> */}
+        </DialogHeader>
+
+        {/* Email Form Section */}
+        <form onSubmit={sendEmail} className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-white font-medium">
+              Recipient Email
+            </Label>
+            <div className="flex items-center">
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter email"
+                className="flex-1 rounded-r-none border-r-0 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-400 focus-visible:ring-zinc-600"
+                required
+              />
+              <Button
+                type="submit"
+                // Use shadcn Button variants for styling
+                className="rounded-l-none bg-zinc-700 text-white hover:bg-zinc-600 transition-colors duration-300 border border-l-0 border-zinc-600"
+                aria-label="Send Email"
+              >
+                <LuSendHorizonal className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </form>
-        <div className="border border-gray-500"></div>
-        <div className="flex justify-center items-center flex-col">
-          <h1 className="text-white text-xl font-semibold py-2">
-            Do not want to send the email?
-          </h1>
-          <h1 className="text-white py-2 font-semibold">Copy the URL</h1>
-          <button
-            onClick={copyLink}
-            className="rounded-3xl text-xl border p-2 justify-center items-center my-1"
-          >
-            <LuCopyPlus />
-          </button>
+
+        {/* Divider */}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-zinc-700"></div>
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-zinc-900 px-2 text-zinc-400">Or</span>
+          </div>
         </div>
-      </div>
-    </div>
+
+        {/* Copy Link Section */}
+        <div className="flex flex-col items-center justify-center space-y-3">
+          <p className="text-center text-white font-medium">
+            Do not want to send the email?
+          </p>
+          <p className="text-center text-white">
+            Copy the URL
+          </p>
+          <Button
+            onClick={copyLink}
+            variant="outline" // Use outline variant for contrast
+            size="icon" // Make it an icon button
+            className="h-12 w-12 rounded-full border border-zinc-600 text-white hover:bg-zinc-800 hover:text-white" // Style the button
+            aria-label="Copy Link"
+          >
+            <LuCopyPlus className="h-5 w-5" />
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

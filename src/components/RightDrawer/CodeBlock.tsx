@@ -142,8 +142,8 @@ export default function CodeBlock({
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="p-4 w-full gap-5 flex">
-        <div className="w-1/2 space-y-4 flex flex-col pr-10 gap-2">
+      <div className="p-4 w-full gap-5 flex flex-col lg:flex-row xl:flex-row">
+        <div className="w-full space-y-4 flex flex-col pr-10 gap-2 lg:w-1/2 xl:w-1/2">
           {/* Title + Description */}
           {snippet && isSnippetArray ? (
             <>
@@ -269,7 +269,7 @@ export default function CodeBlock({
             <div className="mt-4 rounded-xl text-center">
               <Button
                 onClick={handleCreateSnippet}
-                className="w-2/12 rounded-xl hover:bg-blue-600  bg-blue-500 text-white"
+                className="w-6/12 lg:w-3/12 xl:w-3/12 rounded-xl hover:bg-blue-600  bg-blue-500 text-white"
               >
                 Save Snippet
               </Button>
@@ -287,7 +287,7 @@ export default function CodeBlock({
 
 
         {/* Code Block or Editor */}
-        <div className="w-1/2 flex flex-col max-h-[70vh]">
+        <div className="w-full flex flex-col max-h-[70vh] lg:w-1/2 xl:w-1/2">
           {/* Scrollable Code Area */}
           <div className="rounded-xl bg-zinc-900 p-4 shadow-inner border border-zinc-100 overflow-y-auto min-h-[60vh] max-h-[60vh]">
             {snippet ? (
