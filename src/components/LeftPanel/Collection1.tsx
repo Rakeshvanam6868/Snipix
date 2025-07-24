@@ -1,9 +1,14 @@
+"use client";
 import React, { useState, useEffect, useRef } from "react";
-import { FilePlus2, Plus, Search, X } from "lucide-react";
-import { FaFolderOpen } from "react-icons/fa";
-import { BsDot } from "react-icons/bs";
-import { FiMinus } from "react-icons/fi";
-import { MdEdit, MdDelete } from "react-icons/md";
+import {
+  FilePlus2,
+  Plus,
+  Search,
+  X,
+  MoreVertical,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -14,7 +19,6 @@ import { baseURL } from "@/config";
 import DeleteCollectionModal from "./DeleteCollectionModal";
 import EditCollection from "./EditCollection";
 
-// Define prop types
 interface CollectionProps {
   selectedWorkspace: string | null;
   setSelectedWorkspace: (id: string | null) => void;
@@ -38,28 +42,22 @@ const Collection1 = ({
   const [showInput, setShowInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDataLoading, setIsDataLoading] = useState(false);
-  const [activeCollectionIndex, setActiveCollectionIndex] = useState<
-    number | null
-  >(null);
   const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [deleteCollectionModalOpen, setDeleteCollectionModalOpen] = useState(false);
+  const [editCollectionOpenby, setEditCollectionOpenby] = useState(false);
+  const [singleCollection, setSingleCollection] = useState({ _id: "", name: "", description: "" });
+  const [selectedColor, setSelectedColor] = useState<string>("#3b82f6");
+
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownTriggerRef = useRef<HTMLButtonElement | null>(null);
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const workspace = searchParams.get("workspace") || "";
   const collectionid = searchParams.get("collection") || "";
   const shared = searchParams.get("shared") || "";
 
-  const [deleteCollectionModalOpen, setDeleteCollectionModalOpen] =
-    useState(false);
-  const [editCollectionOpenby, setEditCollectionOpenby] = useState(false);
-  const [singleCollection, setSingleCollection] = useState({
-    _id: "",
-    name: "",
-    description: "",
-  });
-
-  // Move fetchCategories inside useEffect or wrap in useCallback
   const fetchCategories = React.useCallback(() => {
     const token = localStorage.getItem("token");
     const headers = { Authorization: `Bearer ${token}` };
@@ -77,7 +75,7 @@ const Collection1 = ({
       setIsDataLoading(true);
       fetchCategories();
     }
-  }, [workspace, fetchCategories]); // ✅ Add fetchCategories as dependency
+  }, [workspace, fetchCategories]);
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutside);
@@ -93,19 +91,20 @@ const Collection1 = ({
     }
   };
 
-  const handleRightClick = (
-    e: React.MouseEvent<HTMLDivElement>,
-    index: number,
+  const handleThreeDotClick = (
+    e: React.MouseEvent<HTMLButtonElement>,
     collection: any
   ) => {
-    e.preventDefault();
-    setDropdownPosition({ x: e.clientX, y: e.clientY });
-    setActiveCollectionIndex(index);
+    e.stopPropagation();
+    dropdownTriggerRef.current = e.currentTarget;
+    const rect = e.currentTarget.getBoundingClientRect();
+    setDropdownPosition({ x: rect.left, y: rect.bottom + 5 });
     setIsDropdownOpen(true);
     setSingleCollection(collection);
   };
 
   const handleOptionClick = (option: string) => {
+    setIsDropdownOpen(false);
     switch (option) {
       case "edit":
         setEditCollectionOpenby(true);
@@ -113,12 +112,11 @@ const Collection1 = ({
       case "delete":
         setDeleteCollectionModalOpen(true);
         break;
-      default:
-        break;
     }
   };
 
   const handleCreateCollection = () => {
+    if (!data.trim()) return;
     setIsLoading(true);
     const token = localStorage.getItem("token");
     const headers = { Authorization: `Bearer ${token}` };
@@ -126,6 +124,7 @@ const Collection1 = ({
       id: workspace,
       name: data,
       description: "Snipix Project Snippets",
+      color: selectedColor,
     };
     axios
       .post(`${baseURL}/v1/api/category`, body, { headers })
@@ -133,8 +132,13 @@ const Collection1 = ({
         fetchCategories();
         setShowInput(false);
         setIsLoading(false);
+        setData("");
+        setSelectedColor("#3b82f6");
       })
-      .catch(() => setIsLoading(false));
+      .catch((err) => {
+        console.error("Error creating collection:", err);
+        setIsLoading(false);
+      });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -145,31 +149,41 @@ const Collection1 = ({
     const params = new URLSearchParams();
     params.set("workspace", workspace);
     params.set("collection", id);
-    if (shared) {
-      params.set("shared", shared);
-    }
+    if (shared) params.set("shared", shared);
     router.push(`?${params.toString()}`);
   };
 
-   if (!selectedWorkspace) {
-    return null; // 👈 Hide completely when no workspace selected
-  }
+  const getTextColor = (bgColor: string) => {
+    const hex = bgColor.replace("#", "");
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 150 ? "#000000" : "#ffffff";
+  };
+
+  const hexToRGBA = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
+  if (!selectedWorkspace) return null;
 
   return (
     <aside
-      className={`fixed left-0  top-0 z-10 w-[260px] h-screen bg-[#141415] text-white border-1 border-zinc-100 px-4 py-4 transition-transform duration-300 ease-in-out transform ${
-        selectedWorkspace ? "translate-x-full" : "-translate-x-full"
-      }
-       ${isSidebarOpen ? "translate-x-full" : "translate-x-[64px]"} 
-      `}
+      className={`fixed left-0 top-0 z-10 w-[260px] h-screen bg-[#141415] text-white border-r border-zinc-800 px-4 py-4 transition-transform duration-300 ease-in-out transform ${
+        isSidebarOpen ? "translate-x-[260px]" : "translate-x-16"
+      }`}
     >
       <div className="flex items-center justify-between mb-4">
-        <div className="font-semibold text-lg">
-          {workspaces?.find((ws) => ws._id === selectedWorkspace)?.name ||
-            "Workspace"}
+        <div className="font-semibold text-lg truncate">
+          {workspaces.find((ws) => ws._id === selectedWorkspace)?.name || "Workspace"}
         </div>
         <Button
           variant="ghost"
+          size="icon"
           className="text-zinc-400 hover:text-white"
           onClick={() => setSelectedWorkspace(null)}
         >
@@ -177,18 +191,17 @@ const Collection1 = ({
         </Button>
       </div>
 
-      <div className="relative">
-        <Button
-          className="w-full justify-start bg-blue-800 hover:bg-blue-900 text-white rounded-xl px-3 py-2 text-sm mb-4"
-          onClick={() => {
-            setShowInput(true);
-            setData("");
-          }}
-        >
-          <Plus className="mr-2 w-4 h-4" />
-          Add Collection
-        </Button>
-      </div>
+      <Button
+        className="w-full justify-start bg-blue-800 hover:bg-blue-900 text-white rounded-xl px-3 py-2 text-sm mb-4"
+        onClick={() => {
+          setShowInput(true);
+          setData("");
+          setSelectedColor("#3b82f6");
+        }}
+      >
+        <Plus className="mr-2 w-4 h-4" />
+        Add Collection
+      </Button>
 
       <div className="relative mb-2">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
@@ -196,109 +209,154 @@ const Collection1 = ({
           placeholder="Search collections"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9 pr-3 py-2 rounded-xl bg-zinc-800 text-white placeholder:text-zinc-400 border-none"
+          className="pl-9 pr-3 py-2 rounded-xl bg-zinc-800 text-white placeholder:text-zinc-400 border-none focus-visible:ring-1 focus-visible:ring-blue-500"
         />
       </div>
 
       {showInput && (
-        <div className="flex items-center mb-2">
+        <div className="flex flex-col mb-4">
           <Input
+            autoFocus
             value={data}
             type="text"
-            className="mr-2 flex-1 bg-zinc-800 text-white rounded-xl"
+            className="mb-2 bg-zinc-800 text-white rounded-xl"
             placeholder="Collection name .."
             onChange={(e) => setData(e.target.value)}
             onKeyDown={handleKeyPress}
           />
-          {!isLoading ? (
-            <>
-              <Button
-                variant="outline"
-                className="bg-gray-600 h-8 px-3 text-xs mr-1"
-                onClick={handleCreateCollection}
-              >
-                Save
-              </Button>
-              <Button
-                variant="ghost"
-                className="text-zinc-400 hover:text-white h-8 px-2"
-                onClick={() => setShowInput(false)}
-              >
-                Cancel
-              </Button>
-            </>
-          ) : (
-            <CircularProgress size={20} color="success" />
-          )}
+          <div className="mb-2">
+            <label className="block text-xs text-zinc-400 mb-1">Color:</label>
+            <div className="flex flex-wrap gap-1">
+              {["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"].map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  className={`w-6 h-6 rounded-full border-2 ${
+                    selectedColor === color ? "border-white" : "border-transparent"
+                  }`}
+                  style={{ backgroundColor: color }}
+                  onClick={() => setSelectedColor(color)}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            {!isLoading ? (
+              <>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="flex-1"
+                  onClick={handleCreateCollection}
+                  disabled={!data.trim()}
+                >
+                  Save
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => setShowInput(false)}
+                >
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <div className="w-full flex justify-center">
+                <CircularProgress size={20} color="inherit" />
+              </div>
+            )}
+          </div>
         </div>
       )}
 
       <div className="text-xs text-zinc-400 uppercase mb-2">Collections</div>
-      <div className="space-y-2 overflow-y-auto">
+      <div className="space-y-1 overflow-y-auto">
         {!isDataLoading ? (
           collection
             .filter((item) =>
               item.name.toLowerCase().includes(searchQuery.toLowerCase())
             )
-            .map((item) => (
-              <div
-                key={item._id}
-                onContextMenu={(e) => handleRightClick(e, 0, item)}
-                onClick={() => updateUrl(item._id)}
-                className={`flex items-center justify-between px-2 py-1 rounded-md cursor-pointer hover:bg-zinc-800 transition-colors ${
-                  collectionid === item._id
-                    ? "bg-zinc-700 text-white"
-                    : "text-zinc-300"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <FilePlus2 className="w-4 h-4 text-zinc-400" />
-                  <span className="text-sm">{item.name}</span>
+            .map((item) => {
+              const isActive = collectionid === item._id;
+              const bgColor = item.color || "#3b82f6";
+              const textColor = getTextColor(bgColor);
+              return (
+                <div
+                  key={item._id}
+                  onClick={() => updateUrl(item._id)}
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer transition-colors group ${
+                    isActive ? "" : "hover:bg-zinc-800"
+                  }`}
+                  style={
+                    isActive
+                      ? {
+                          backgroundColor: hexToRGBA(bgColor, 0.2),
+                          color: textColor,
+                          border: `1px solid ${hexToRGBA(bgColor, 0.5)}`,
+                        }
+                      : {}
+                  }
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <FilePlus2 className="w-4 h-4 flex-shrink-0" style={{ color: isActive ? textColor : "#a1a1aa" }} />
+                    <span className="text-sm truncate">{item.name}</span>
+                  </div>
+                  <Button
+                    ref={dropdownTriggerRef}
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-zinc-400 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => handleThreeDotClick(e, item)}
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
                 </div>
-              </div>
-            ))
+              );
+            })
         ) : (
           <div className="flex flex-col gap-2">
             {[1, 2, 3, 4].map((s) => (
               <Skeleton
                 key={s}
-                height={30}
-                sx={{ bgcolor: "grey.700", borderRadius: "8px" }}
+                height={36}
+                sx={{ bgcolor: "grey.700", borderRadius: "12px" }}
               />
             ))}
           </div>
         )}
       </div>
 
+      {/* Dropdown */}
       {isDropdownOpen && (
         <div
           ref={dropdownRef}
+          className="fixed z-50 bg-zinc-900 border border-zinc-700 rounded-md shadow-lg py-1 min-w-[160px]"
           style={{
-            position: "fixed",
-            padding: "10px",
-            top: dropdownPosition.y,
-            left: dropdownPosition.x,
-            backgroundColor: "#131211c4",
-            borderRadius: "4px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-            backdropFilter: "blur(3px)",
-            zIndex: 9999,
+            top: dropdownTriggerRef.current?.getBoundingClientRect().bottom ?? dropdownPosition.y,
+            left: dropdownTriggerRef.current?.getBoundingClientRect().left ?? dropdownPosition.x,
           }}
         >
-          <ul className="w-20">
-            <li
-              className="cursor-pointer flex justify-between hover:bg-slate-300 hover:text-black p-1 rounded"
-              onClick={() => handleOptionClick("edit")}
-            >
-              Edit <MdEdit className="mt-1" />
-            </li>
-            <li
-              className="cursor-pointer flex justify-between hover:bg-slate-300 hover:text-black p-1 rounded"
-              onClick={() => handleOptionClick("delete")}
-            >
-              Delete <MdDelete className="mt-1" />
-            </li>
-          </ul>
+          <button
+            className="flex items-center justify-between w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-500/20 transition-colors duration-150"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOptionClick("edit");
+            }}
+          >
+            <span>Edit</span>
+            <Pencil className="h-4 w-4" />
+          </button>
+          <button
+            className="flex items-center justify-between w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/20 transition-colors duration-150"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOptionClick("delete");
+            }}
+          >
+            <span>Delete</span>
+            <Trash2 className="h-4 w-4" />
+          </button>
         </div>
       )}
 

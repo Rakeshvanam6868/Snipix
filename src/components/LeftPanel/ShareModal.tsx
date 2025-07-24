@@ -1,13 +1,20 @@
+// ShareModal.tsx (or .jsx)
 import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import axios from "axios";
 import { baseURL } from "@/config";
 
-// Define ShareModalProps interface
+// Import shadcn/ui components
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label"; // Import Label for better accessibility
+
+// Define ShareModalProps interface (keeping the original name)
 interface ShareModalProps {
   open: boolean;
   onClose: () => void;
@@ -18,86 +25,91 @@ interface ShareModalProps {
   };
 }
 
-const modalStyle = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "#ffffff", // Change background color to white
-  borderRadius: 8, // Add border radius for a rounded look
-  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", // Add box shadow for depth
-  p: 4,
-};
-
 const ShareModal: React.FC<ShareModalProps> = ({
   open,
   onClose,
   workspace,
 }) => {
-  const [email, setEmail] = useState<string>();
+  const [email, setEmail] = useState<string>(); // Consider initializing with an empty string: useState<string>("");
+
   const handleShareWorkspace = async () => {
+    // Basic validation can be added here if needed, e.g., check if email is provided and valid
+
     const body = {
       email: email,
-      workspace_id: `${workspace._id}`,
+      workspace_id: `${workspace._id}`, // Ensure workspace._id exists
       sharedData: "workspace",
     };
     const token = localStorage.getItem("token");
 
+    // Add a check for token existence (good practice)
+    if (!token) {
+        console.error("Authorization token not found.");
+        alert("Authentication error. Please log in again.");
+        onClose();
+        return;
+    }
+
     const headers = {
       Authorization: `Bearer ${token}`,
     };
-    await axios
-      .post(`${baseURL}/v1/api/share/workspace`, body, { headers })
-      .then(
-        (response) => {
-          console.log(response);
-          alert("Workspace Shared Successfully");
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
-    onClose();
+
+    try {
+      const response = await axios.post(`${baseURL}/v1/api/share/workspace`, body, { headers });
+      console.log(response);
+      alert("Workspace Shared Successfully");
+      // Optionally, clear the email input after successful share:
+      // setEmail("");
+    } catch (error) {
+      console.log("Error sharing workspace:", error);
+      // Optionally, show an error message to the user
+      alert("Failed to share workspace. Please try again."); // Added user feedback
+    } finally {
+      onClose(); // Move onClose to finally block to ensure it's called
+    }
   };
 
   return (
-    <div>
-      <Modal
-        open={open}
-        onClose={onClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={modalStyle}>
-          <Typography
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-            mb={2}
-            className="text-black"
-          >
+    // Use shadcn Dialog component instead of MUI Modal
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent className="sm:max-w-[425px] text-white bg-black"> {/* Light theme styling */}
+        {/* Dialog Header */}
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold text-white">
             Share Access
-          </Typography>
-          <TextField
-            id="standard-basic"
-            label="Enter Email"
-            variant="outlined" // Change variant to outlined for a cleaner look
-            fullWidth // Take up full width
-            className="mb-2" // Add margin bottom
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          </DialogTitle>
+        </DialogHeader>
+
+        {/* Dialog Content - Form Fields */}
+        <div className="space-y-4 py-4"> {/* Use space-y for consistent vertical spacing */}
+          {/* Email Input */}
+          <div className="space-y-2">
+            <Label htmlFor="share-email" className="text-white"> {/* Use Label component */}
+              Enter Email {/* Label text */}
+            </Label>
+            <Input
+              id="share-email" // Add id for accessibility
+              type="email" // Specify email type for better mobile UX and validation
+              placeholder="user@example.com" // Placeholder text
+              value={email || ""} // Controlled component value, handle undefined
+              onChange={(e) => setEmail(e.target.value)} // Update state on change
+              className="bg-zinc-900 border border-zinc-700 text-white placeholder:text-gray-500" // Style the input for light theme
+            />
+          </div>
+        </div>
+
+        {/* Dialog Footer - Action Button */}
+        <div className="pt-2"> {/* Add padding top for spacing from inputs */}
           <Button
-            variant="contained"
-            color="primary"
-            onClick={handleShareWorkspace}
-            fullWidth
+            // Use shadcn Button with primary color (default variant is usually primary)
+            className="w-full" // Full width
+            onClick={handleShareWorkspace} // Handle click
           >
             Share
           </Button>
-        </Box>
-      </Modal>
-    </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
