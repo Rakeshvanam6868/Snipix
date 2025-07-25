@@ -46,7 +46,11 @@ const Collection1 = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [deleteCollectionModalOpen, setDeleteCollectionModalOpen] = useState(false);
   const [editCollectionOpenby, setEditCollectionOpenby] = useState(false);
-  const [singleCollection, setSingleCollection] = useState({ _id: "", name: "", description: "" });
+  const [singleCollection, setSingleCollection] = useState({
+    _id: "",
+    name: "",
+    description: "",
+  });
   const [selectedColor, setSelectedColor] = useState<string>("#3b82f6");
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -78,18 +82,19 @@ const Collection1 = ({
   }, [workspace, fetchCategories]);
 
   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        dropdownTriggerRef.current !== event.target
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
-
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target as Node)
-    ) {
-      setIsDropdownOpen(false);
-    }
-  };
 
   const handleThreeDotClick = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -98,7 +103,7 @@ const Collection1 = ({
     e.stopPropagation();
     dropdownTriggerRef.current = e.currentTarget;
     const rect = e.currentTarget.getBoundingClientRect();
-    setDropdownPosition({ x: rect.left, y: rect.bottom + 5 });
+    setDropdownPosition({ x: rect.left - 230, y: rect.bottom + 5 });
     setIsDropdownOpen(true);
     setSingleCollection(collection);
   };
@@ -299,7 +304,10 @@ const Collection1 = ({
                   }
                 >
                   <div className="flex items-center gap-2 truncate">
-                    <FilePlus2 className="w-4 h-4 flex-shrink-0" style={{ color: isActive ? textColor : "#a1a1aa" }} />
+                    <FilePlus2
+                      className="w-4 h-4 flex-shrink-0"
+                      style={{ color: isActive ? textColor : "#a1a1aa" }}
+                    />
                     <span className="text-sm truncate">{item.name}</span>
                   </div>
                   <Button
@@ -327,14 +335,13 @@ const Collection1 = ({
         )}
       </div>
 
-      {/* Dropdown */}
       {isDropdownOpen && (
         <div
           ref={dropdownRef}
           className="fixed z-50 bg-zinc-900 border border-zinc-700 rounded-md shadow-lg py-1 min-w-[160px]"
           style={{
-            top: dropdownTriggerRef.current?.getBoundingClientRect().bottom ?? dropdownPosition.y,
-            left: dropdownTriggerRef.current?.getBoundingClientRect().left ?? dropdownPosition.x,
+            top: `${dropdownPosition.y}px`,
+            left: `${dropdownPosition.x}px`,
           }}
         >
           <button
