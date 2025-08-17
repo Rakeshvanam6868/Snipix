@@ -84,7 +84,7 @@ export default function Modal({ fetchWorkspace }: any) {
       </DialogTrigger>
       {/* Applied styling using Tailwind classes */}
       <DialogContent
-        className="sm:max-w-[425px] rounded-3xl bg-white backdrop-blur-sm" // Added bg-white and backdrop-blur-sm
+        className="sm:max-w-[425px] rounded-3xl bg-black backdrop-blur-sm" // Added bg-white and backdrop-blur-sm
       >
         <DialogHeader>
           <DialogTitle className="text-black">Create Workspace</DialogTitle> {/* Explicit text color */}

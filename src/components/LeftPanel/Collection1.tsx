@@ -230,7 +230,7 @@ const Collection1 = ({
             onKeyDown={handleKeyPress}
           />
           <div className="mb-2">
-            <label className="block text-xs text-zinc-400 mb-1">Color:</label>
+            {/* <label className="block text-xs text-zinc-400 mb-1">Color:</label>
             <div className="flex flex-wrap gap-1">
               {["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"].map((color) => (
                 <button
@@ -243,7 +243,7 @@ const Collection1 = ({
                   onClick={() => setSelectedColor(color)}
                 />
               ))}
-            </div>
+            </div> */}
           </div>
           <div className="flex gap-2">
             {!isLoading ? (
