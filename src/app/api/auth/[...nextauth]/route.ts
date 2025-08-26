@@ -12,7 +12,12 @@ const handler = NextAuth({
             clientSecret : process.env.GITHUB_SECRET || ''
 
         })
-    ]
+    ],
+    secret: process.env.NEXTAUTH_SECRET!,
+  session: {
+    strategy: "jwt", // Use JWT instead of database
+  },
+  debug: process.env.NODE_ENV === "development",
   })
   
   export { handler as GET, handler as POST }
