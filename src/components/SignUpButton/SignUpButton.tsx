@@ -23,8 +23,7 @@ export function SignUpButton({ description }: ButtonProps) {
   }, [router]);
 
   const handleSignIn = () => {
-    // Redirect to callback after login
-    signIn("google", { callbackUrl: "/api/auth/callback" });
+    signIn("google", { callbackUrl: "/auth/callback" });
   };
 
   return (

@@ -6,7 +6,8 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 import { baseURL } from "../../../../config";
 
-export default function AuthCallback() {
+// Deprecated: this page has moved to /auth/callback to avoid conflicting with API routes
+export default function AuthCallbackLegacy() {
   const router = useRouter();
   const { data, status } = useSession();
 
