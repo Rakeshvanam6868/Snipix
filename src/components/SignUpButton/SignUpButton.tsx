@@ -23,7 +23,8 @@ export function SignUpButton({ description }: ButtonProps) {
   }, [router]);
 
   const handleSignIn = () => {
-    signIn("google", { callbackUrl: "/auth/callback" });
+    const base = typeof window !== "undefined" ? window.location.origin : "";
+    signIn("google", { callbackUrl: `${base}/auth/callback` });
   };
 
   return (

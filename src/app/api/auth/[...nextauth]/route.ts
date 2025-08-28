@@ -17,7 +17,9 @@ const handler = NextAuth({
   session: {
     strategy: "jwt", // Use JWT instead of database
   },
-  trustHost: true,
+  pages: {
+    signIn: "/",
+  },
   debug: process.env.NODE_ENV === "development",
   })
   
