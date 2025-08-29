@@ -9,8 +9,7 @@ export default function SignInPage() {
   const handleGoogle = async () => {
     try {
       setLoading(true);
-      const origin = typeof window !== "undefined" ? window.location.origin : "";
-      await signIn("google", { callbackUrl: `${origin}/auth/callback` });
+      await signIn("google", { callbackUrl: "/auth/callback" });
     } finally {
       setLoading(false);
     }
