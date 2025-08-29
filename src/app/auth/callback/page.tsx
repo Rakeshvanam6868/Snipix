@@ -29,7 +29,7 @@ export default function AuthCallback() {
         if (typeof window !== "undefined" && !localStorage.getItem("token")) {
           router.replace("/auth/signin");
         }
-      }, 8000);
+      }, 12000);
       return () => clearTimeout(timeout);
     }
 
@@ -37,7 +37,14 @@ export default function AuthCallback() {
       hasAttemptedRef.current = true;
       const { name, email, image } = data.user;
       if (!name || !email) {
-        router.replace("/");
+        // Still go to workspace to allow guarded mint there using session
+        router.replace("/workspace");
+        return;
+      }
+
+      // If baseURL is missing, skip minting here and let workspace mint.
+      if (!baseURL) {
+        router.replace("/workspace");
         return;
       }
 
@@ -53,10 +60,14 @@ export default function AuthCallback() {
             localStorage.setItem("token", token);
             router.replace("/workspace");
           } else {
-            router.replace("/");
+            // Proceed to workspace and let it mint using the session
+            router.replace("/workspace");
           }
         })
-        .catch(() => router.replace("/"));
+        .catch(() => {
+          // Proceed to workspace and let it mint using the session
+          router.replace("/workspace");
+        });
     }
   }, [status, router, data?.user]);
 

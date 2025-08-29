@@ -90,11 +90,20 @@ const WorkspacePage: React.FC = () => {
       return;
     }
 
-    // No session and no token → redirect once
+    // No session and no token → wait a short grace period before redirect
     if (sessionStatus === "unauthenticated") {
       setIsAuthorized(false);
       hasResolvedAuthRef.current = true;
-      router.replace("/");
+      const timeout = setTimeout(() => {
+        // re-check token before redirect in case mint completed elsewhere
+        const lateToken = localStorage.getItem("token");
+        if (lateToken) {
+          setIsAuthorized(true);
+          return;
+        }
+        router.replace("/");
+      }, 1500);
+      return () => clearTimeout(timeout);
     }
   }, [router, sessionStatus, session?.user?.email, session?.user?.name, session?.user?.image]);
 
