@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import axios from "axios";
@@ -9,6 +9,7 @@ import { baseURL } from "@/config";
 export default function AuthCallback() {
   const router = useRouter();
   const { data, status } = useSession();
+  const hasAttemptedRef = useRef(false);
 
   useEffect(() => {
     if (typeof window !== "undefined" && localStorage.getItem("token")) {
@@ -20,12 +21,20 @@ export default function AuthCallback() {
       return;
     }
 
+    // Do NOT immediately kick unauthenticated users to "/".
+    // Give NextAuth a moment to hydrate the session and then proceed once authenticated.
     if (status === "unauthenticated") {
-      router.replace("/");
-      return;
+      // As a safety, if we remain unauthenticated for a while, send to sign in.
+      const timeout = setTimeout(() => {
+        if (typeof window !== "undefined" && !localStorage.getItem("token")) {
+          router.replace("/auth/signin");
+        }
+      }, 8000);
+      return () => clearTimeout(timeout);
     }
 
-    if (status === "authenticated" && data?.user) {
+    if (status === "authenticated" && data?.user && !hasAttemptedRef.current) {
+      hasAttemptedRef.current = true;
       const { name, email, image } = data.user;
       if (!name || !email) {
         router.replace("/");
@@ -36,10 +45,10 @@ export default function AuthCallback() {
         .post(
           `${baseURL}/v1/api/user`,
           { name, email, image: image || null },
-          { headers: { "Content-Type": "application/json" }, timeout: 10000 }
+          { headers: { "Content-Type": "application/json" }, timeout: 15000 }
         )
         .then((res) => {
-          const token = res.data.token;
+          const token = res.data?.token;
           if (token) {
             localStorage.setItem("token", token);
             router.replace("/workspace");

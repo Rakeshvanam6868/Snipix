@@ -2,7 +2,8 @@
 
 import Drawer from "@/components/RightDrawer/Drawer";
 import SnippetSection from "@/components/MiddleSection/SnippetSection";
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import axios from "axios";
 import { baseURL } from "@/config";
@@ -27,18 +28,75 @@ const WorkspacePage: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { data: session, status: sessionStatus } = useSession();
 
-  // Auth guard: block access without token
+  // Refs to avoid race conditions and duplicate mints/redirects
+  const isMintingRef = useRef(false);
+  const hasResolvedAuthRef = useRef(false);
+
+  // Initial token check on mount (only once)
   React.useEffect(() => {
     if (typeof window === "undefined") return;
     const token = localStorage.getItem("token");
-    if (!token) {
-      setIsAuthorized(false);
-      router.replace("/");
-    } else {
+    if (token) {
       setIsAuthorized(true);
+      hasResolvedAuthRef.current = true;
     }
-  }, [router]);
+  }, []);
+
+  // Auth guard: ensure a single-resolve flow
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (hasResolvedAuthRef.current) return; // already authorized or handled
+
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsAuthorized(true);
+      hasResolvedAuthRef.current = true;
+      return;
+    }
+
+    if (sessionStatus === "loading") {
+      setIsAuthorized(null);
+      return;
+    }
+
+    if (sessionStatus === "authenticated" && session?.user?.email && !isMintingRef.current) {
+      isMintingRef.current = true;
+      const mint = async () => {
+        try {
+          const res = await axios.post(
+            `${baseURL}/v1/api/user`,
+            {
+              name: session?.user?.name,
+              email: session?.user?.email,
+              image: session?.user?.image,
+            },
+            { headers: { "Content-Type": "application/json" } }
+          );
+          const jwt = res.data?.token;
+          if (jwt) {
+            localStorage.setItem("token", jwt);
+            setIsAuthorized(true);
+            hasResolvedAuthRef.current = true;
+            return;
+          }
+        } catch {}
+        setIsAuthorized(false);
+        hasResolvedAuthRef.current = true;
+        router.replace("/");
+      };
+      mint();
+      return;
+    }
+
+    // No session and no token → redirect once
+    if (sessionStatus === "unauthenticated") {
+      setIsAuthorized(false);
+      hasResolvedAuthRef.current = true;
+      router.replace("/");
+    }
+  }, [router, sessionStatus, session?.user?.email, session?.user?.name, session?.user?.image]);
 
   const collection = searchParams.get("collection") ?? "";
   const snippet = searchParams.get("snippet") ?? "";
