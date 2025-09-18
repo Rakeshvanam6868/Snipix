@@ -56,17 +56,17 @@ const Collection1 = ({
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dropdownTriggerRef = useRef<HTMLButtonElement | null>(null);
-
+  
   const searchParams = useSearchParams();
   const router = useRouter();
   const workspace = searchParams.get("workspace") || "";
   const collectionid = searchParams.get("collection") || "";
   const shared = searchParams.get("shared") || "";
-
+  
   const { data: session, status } = useSession();
 
   const fetchCategories = React.useCallback(() => {
-    const token = localStorage.getItem("token");
+    const token = (session as any).backendJwt;
     const headers = {
       Authorization: `Bearer ${token}`,
     };

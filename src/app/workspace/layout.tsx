@@ -1,7 +1,6 @@
 import React from "react";
-import Collection from "@/components/LeftPanel/Collection";
 import Sidebar from "@/components/LeftPanel/Sidebar";
-import Sidebar1 from "@/components/LeftPanel/Sidebar1";
+import Sidebar1 from "@/components/LeftPanel/Sidebar";
 type LayoutProps = {
   children: React.ReactNode;
 };
@@ -11,7 +10,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="bg-[#18181B] min-h-screen w-screen flex">
       <div className=" flex">
         {/* Sidebar content goes here */}
-        <Sidebar1/>
+        <Sidebar/>
       </div>
       {children}
     </div>
