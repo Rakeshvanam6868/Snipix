@@ -7,6 +7,7 @@ import axios from "axios";
 import Welcome from "./Welcome";
 import useFetch from "@/network/useFetch";
 import { baseURL } from "@/config";
+import { useSession } from "next-auth/react";
 interface SnippetSectionProps {
   isRefresh: any;
 }
@@ -35,9 +36,10 @@ const SnippetSection: React.FC<SnippetSectionProps> = ({ isRefresh }) => {
   };
 
   const [isSnippet, setIsSnippet] = useState<any>([]);
+  const { data: session, status } = useSession();
   useLayoutEffect(() => {
     const fetchSnippets = async () => {
-      const token = localStorage.getItem("token");
+      const token = (session as any).backendJwt;
       const headers = {
         Authorization: `Bearer ${token}`,
       };

@@ -30,8 +30,9 @@ interface ModalProps {
 }
 
 const ShareSnippet = ({ onClose, snippet_id }: ModalProps) => {
-  const session = useSession();
+  // const session = useSession();
   const [email, setEmail] = useState("");
+ const { data: session, status } = useSession();
 
   const sendEmail = async (e: React.FormEvent) => { // Type the event correctly
     e.preventDefault();
@@ -40,7 +41,7 @@ const ShareSnippet = ({ onClose, snippet_id }: ModalProps) => {
         return;
     }
     try {
-      const token = localStorage.getItem("token");
+      const token = (session as any).backendJwt;
       if (!token) {
           toast.error("Authentication token not found.");
           return;
@@ -51,7 +52,7 @@ const ShareSnippet = ({ onClose, snippet_id }: ModalProps) => {
       const body = {
         email,
         snippetid: snippet_id,
-        user_name: session.data?.user?.name,
+        user_name: (session as any).data?.user?.name,
       };
       console.log("Share Snippet Body =>", body);
       await axios.put(`${baseURL}/v1/api/snippet/share`, body, { headers });

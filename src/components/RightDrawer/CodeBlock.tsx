@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/tooltip";
 import { addSnippetBody } from "@/inputValidation";
 import { baseURL } from "@/config";
-
+import { useSession } from "next-auth/react";
 interface Props {
   isEditable: boolean;
   setIsEditable: any;
@@ -48,7 +48,7 @@ export default function CodeBlock({
   const workspace = searchParams.get("workspace") ?? "";
   const edit = searchParams.get("edit") ?? "";
   const add = searchParams.get("add") ?? "";
-
+ const { data: session, status } = useSession(); 
   const [codeData, setCodeData] = useState<any>({});
   const [showShare, setShowShare] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
@@ -71,7 +71,7 @@ export default function CodeBlock({
 
   useEffect(() => {
     if (snippet) {
-      const token = localStorage.getItem("token");
+      const token = (session as any).backendJwt;
       axios
         .get(`${baseURL}/v1/api/snippet?snippet_id=${snippet}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -112,7 +112,7 @@ export default function CodeBlock({
         workspace_id: workspace,
       };
 
-      const token = localStorage.getItem("token");
+      const token = (session as any).backendJwt;
       const res = await axios.post(`${baseURL}/v1/api/snippet`, body, {
         headers: { Authorization: `Bearer ${token}` },
       });

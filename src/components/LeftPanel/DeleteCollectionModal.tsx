@@ -3,7 +3,7 @@ import React from "react";
 import { baseURL } from "@/config";
 import axios from "axios";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-
+import { useSession } from "next-auth/react";
 // Import shadcn/ui components
 import {
   Dialog,
@@ -40,6 +40,7 @@ const DeleteCollectionModal: React.FC<DeleteCollectionModalProps> = ({
   const snippet_id = searchParams.get("snippet") || ""; // Note: snippet_id is retrieved but not used in the original logic
   const router = useRouter();
   const pathName = usePathname();
+   const { data: session, status } = useSession();
 
   const handleDelete = async (e: React.FormEvent) => { // Type the event correctly
     e.preventDefault(); // Prevent default if this is triggered by a form submit, though it's a button click here
@@ -50,7 +51,7 @@ const DeleteCollectionModal: React.FC<DeleteCollectionModalProps> = ({
       };
       console.log("Delete Collection Body =>", body);
 
-      const token = localStorage.getItem("token");
+      const token = (session as any).backendJwt;
 
       // Add a check for token existence
       if (!token) {

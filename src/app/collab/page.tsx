@@ -53,7 +53,7 @@ function Page() {
     if(sharing==="true"){
       fetchCode()
     }
-  }, [])
+  }, [email, snippet, status, sharing])
   return (
     <Suspense fallback={<div>Loading...</div>}>
     <div className="">

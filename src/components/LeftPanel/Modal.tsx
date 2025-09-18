@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { baseURL } from "@/config";
 import { Plus } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 export default function Modal({ fetchWorkspace }: any) {
   const [open, setOpen] = React.useState(false);
@@ -31,7 +32,7 @@ export default function Modal({ fetchWorkspace }: any) {
     name: "",
     description: "",
   });
-
+ const { data: session, status } = useSession();
   // This function exists but isn't called in the original logic
   const handleSubmit = () => {
     setOpen(false);
@@ -44,7 +45,7 @@ export default function Modal({ fetchWorkspace }: any) {
       name: data.name,
       description: data.description,
     };
-    const token = localStorage.getItem("token");
+    const token = (session as any).backendJwt;
     // Add a check for token existence (good practice, doesn't change core logic flow)
     if (!token) {
         console.error("Authorization token not found.");

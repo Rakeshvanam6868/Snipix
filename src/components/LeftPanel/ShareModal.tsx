@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { baseURL } from "@/config";
-
+import { useSession } from "next-auth/react";
 // Import shadcn/ui components
 import {
   Dialog,
@@ -31,7 +31,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
   workspace,
 }) => {
   const [email, setEmail] = useState<string>(); // Consider initializing with an empty string: useState<string>("");
-
+   const { data: session, status } = useSession();
   const handleShareWorkspace = async () => {
     // Basic validation can be added here if needed, e.g., check if email is provided and valid
 
@@ -40,7 +40,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
       workspace_id: `${workspace._id}`, // Ensure workspace._id exists
       sharedData: "workspace",
     };
-    const token = localStorage.getItem("token");
+    const token = (session as any).backendJwt;
 
     // Add a check for token existence (good practice)
     if (!token) {

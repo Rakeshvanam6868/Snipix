@@ -6,16 +6,17 @@ import { baseURL } from "@/config";
 import axios from "axios";
 import { MdDelete } from "react-icons/md";
 import { Tooltip } from "@mui/material";
+import { useSession } from "next-auth/react";
 
 export default function Access() {
   const [isDataLoading, setIsDataLoading] = useState(false);
   const [workspace, setWorkspace] = useState<any>([]);
   const [singleWorkspace, setSingleWorkspace] = useState<any>();
   const [accessList, setAccessList] = useState<any>();
-
+ const { data: session, status } = useSession();
   useEffect(() => {
     setIsDataLoading(true);
-    const token = localStorage.getItem("token");
+   const token = (session as any).backendJwt;
     const headers = {
       Authorization: `Bearer ${token}`,
     };
@@ -34,7 +35,7 @@ export default function Access() {
   const getAccessList = async (workspace: any) => {
     console.log("this is workspace=>", workspace);
     setSingleWorkspace(workspace);
-    const token = localStorage.getItem("token");
+    const token = (session as any).backendJwt;
     const headers = {
       Authorization: `Bearer ${token}`,
     };

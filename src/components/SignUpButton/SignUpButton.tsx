@@ -2,11 +2,12 @@
 
 import { baseURL } from "@/config";
 import axios from "axios";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import { useRouter } from "next/navigation";
 import StarBorder from "../ui/StarBorder";
+import { useSession } from "next-auth/react";
 
 interface ButtonProps {
   description: string;
@@ -14,10 +15,12 @@ interface ButtonProps {
 
 export function SignUpButton({ description }: ButtonProps) {
   const router = useRouter();
+  const { data: session, status } = useSession();
+
 
   // Redirect if already logged in
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    if (session && (session as any).backendJwt) {
       router.replace("/workspace");
     }
   }, [router]);

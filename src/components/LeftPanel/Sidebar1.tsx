@@ -1,7 +1,7 @@
 "use client";
 import {
   Plus,
-  Home, // Default fallback icon
+  Home,
   Mail,
   Settings,
   UserPlus,
@@ -13,7 +13,6 @@ import {
   ChevronRight,
   PanelRightOpen,
   PanelLeftOpen,
-  // --- Icons for Dynamic Assignment ---
   Code,
   FileText,
   Database,
@@ -25,11 +24,10 @@ import {
   Calendar,
   CreditCard,
   Folder,
-  // --- Icons for Dropdown ---
-  MoreVertical, // Three dots icon
-  Pencil, // Edit icon
-  Trash2, // Delete icon
-  Share, // Share icon
+  MoreVertical,
+  Pencil,
+  Trash2,
+  Share,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -54,20 +52,15 @@ import ShareModal from "./ShareModal";
 import DeleteModal from "./DeleteModal";
 import SettingsModal from "../Settings/SettingsModal";
 
-// Define Workspace type
 interface Workspace {
   _id: string;
   name: string;
   description: string;
-  // Add icon property if your backend sends it, or we'll derive it
-  // icon?: string;
 }
 
-// --- Icon Mapping Function ---
 const getIconForWorkspace = (workspaceName: string) => {
   const name = workspaceName.toLowerCase();
 
-  // Map keywords to icons
   if (name.includes("code") || name.includes("dev")) return Code;
   if (name.includes("doc") || name.includes("text")) return FileText;
   if (name.includes("data") || name.includes("db")) return Database;
@@ -79,26 +72,22 @@ const getIconForWorkspace = (workspaceName: string) => {
   if (name.includes("calendar") || name.includes("event")) return Calendar;
   if (name.includes("finance") || name.includes("pay")) return CreditCard;
 
-  // Default icon if no match found
   return Folder;
 };
 
 export default function Sidebar() {
-  const [allWorkspaces, setAllWorkspaces] = useState<Workspace[]>([]); // Store all fetched workspaces
-  const [filteredWorkspaces, setFilteredWorkspaces] = useState<Workspace[]>([]); // For search results
+  const [allWorkspaces, setAllWorkspaces] = useState<Workspace[]>([]);
+  const [filteredWorkspaces, setFilteredWorkspaces] = useState<Workspace[]>([]);
   const [sharedWorkspace, setSharedWorkspace] = useState<any[]>([]);
   const [isSharedOpen, setIsSharedOpen] = useState(false);
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(
     null
-  ); // Use ID for selection
+  );
   const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [activeWorkspaceIndex, setActiveWorkspaceIndex] = useState<
-    number | null
-  >(null);
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
+  const [activeWorkspaceIndex, setActiveWorkspaceIndex] = useState<number | null>(
+    null
+  );
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isDataLoading, setIsDataLoading] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
@@ -107,75 +96,76 @@ export default function Sidebar() {
     name: "",
     description: "",
   });
-  const [modalClose, setModalClose] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteWorkspaceId, setDeleteWorkspaceId] = useState<string>();
-  const [shareModalOpen, setShareModalOpen] = useState<boolean>(false);
-  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
-  // Toggle sidebar state
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
-  const session = useSession();
-  const email = session.data?.user?.email;
+  const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
+  const token = (session as any)?.backendJwt;
+  const email = session?.user?.email;
 
-  // Load saved sidebar state from localStorage
+  const handleClickOutside = React.useCallback((event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node) &&
+      !isDropdownButton(event.target as Node)
+    ) {
+      setIsDropdownOpen(false);
+    }
+  }, []);
+
   useEffect(() => {
     const saved = localStorage.getItem("sidebarOpen");
     if (saved !== null) {
       setIsSidebarOpen(JSON.parse(saved));
     }
-  }, []);
+  }, [searchParams]);
 
-  // Save sidebar state to localStorage
   useEffect(() => {
     localStorage.setItem("sidebarOpen", JSON.stringify(isSidebarOpen));
   }, [isSidebarOpen]);
 
-  const fetchWorkspace = () => {
-    const token = localStorage.getItem("token");
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-    setIsDataLoading(true); // Start loading before fetches
-    axios
-      .get(`${baseURL}/v1/api/workspace`, { headers })
-      .then((response) => {
-        setAllWorkspaces(response.data);
-        setFilteredWorkspaces(response.data); // Initially show all
-      })
-      .catch((error) => {
-        console.error("Error fetching owned workspaces:", error);
-      })
-      .finally(() => {
-         // Check if shared workspaces have also loaded
-         if (sharedWorkspace.length > 0 || !email) {
-            setIsDataLoading(false);
-         }
-      });
+  const fetchWorkspace = React.useCallback(async () => {
+    if (!token) {
+      console.warn("No backend JWT token available to fetch workspaces");
+      return;
+    }
 
-    axios
-      .get(`${baseURL}/v1/api/workspace?email=${email}`, { headers })
-      .then((response) => {
-        setSharedWorkspace(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching shared workspaces:", error);
-      })
-      .finally(() => {
-         // Check if owned workspaces have also loaded
-         if (allWorkspaces.length > 0 || !token) {
-             setIsDataLoading(false);
-         }
-      });
-  };
+    setIsDataLoading(true);
+
+    try {
+      const [ownedRes, sharedRes] = await Promise.all([
+        axios.get(`${baseURL}/v1/api/workspace`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get(`${baseURL}/v1/api/workspace?email=${email}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+
+      console.log("Owned workspaces:", ownedRes.data);
+      console.log("Shared workspaces:", sharedRes.data);
+
+      setAllWorkspaces(ownedRes.data);
+      setFilteredWorkspaces(ownedRes.data);
+      setSharedWorkspace(sharedRes.data);
+    } catch (error) {
+      console.error("Error fetching workspaces:", error);
+    } finally {
+      setIsDataLoading(false);
+    }
+  }, [token, email]);
 
   useEffect(() => {
-    fetchWorkspace();
-  }, [email]);
+    if (status === "authenticated" && token) {
+      fetchWorkspace();
+    }
+  }, [email, token, status, fetchWorkspace]);
 
-  // --- Search Effect ---
   useEffect(() => {
     if (searchQuery.trim() === "") {
       setFilteredWorkspaces(allWorkspaces);
@@ -189,51 +179,36 @@ export default function Sidebar() {
   }, [searchQuery, allWorkspaces]);
 
   const handleLogOut = () => {
-    localStorage.removeItem("token");
-    signOut({ callbackUrl: "https://snipix.vercel.app/ " });
+    signOut({ callbackUrl: process.env.NEXT_PUBLIC_BASEURL || "/" });
   };
 
   const updateUrl = (id: string) => {
     setSelectedWorkspaceId(id);
-    localStorage.setItem("selectedWorkspaceId", id); // Store ID
+    localStorage.setItem("selectedWorkspaceId", id);
     const query = { workspace: id };
     router.push(`?${new URLSearchParams(query).toString()}`);
   };
 
-  const searchParams = useSearchParams();
-  const w_id = searchParams.get("workspace") || "";
   useEffect(() => {
-    // Set initial selected workspace from URL or localStorage
-    const initialId = searchParams.get("workspace") || localStorage.getItem("selectedWorkspaceId");
+    const initialId =
+      searchParams.get("workspace") || localStorage.getItem("selectedWorkspaceId");
     if (initialId) {
-       setSelectedWorkspaceId(initialId);
+      setSelectedWorkspaceId(initialId);
     }
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, []); // Run once on mount
-
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target as Node) &&
-      !isDropdownButton(event.target as Node)
-    ) {
-      setIsDropdownOpen(false);
-    }
-  };
+  }, [handleClickOutside, searchParams]);
 
   const isDropdownButton = (target: Node) => {
-    return (
-      target instanceof HTMLElement && target.closest('[data-dropdown-trigger]')
-    );
+    return target instanceof HTMLElement && target.closest("[data-dropdown-trigger]");
   };
 
   const handleRightClick = (
     e: React.MouseEvent<HTMLDivElement>,
     index: number,
-    workspace: any,
+    workspace: Workspace,
     check: string
   ) => {
     e.preventDefault();
@@ -244,7 +219,7 @@ export default function Sidebar() {
     setDeleteWorkspaceId(workspace._id);
     if (check === "shared") {
       setIsSharedOpen(true);
-      setDeleteWorkspaceId(workspace.workspace_id);
+      setDeleteWorkspaceId(workspace._id);
     } else {
       setIsSharedOpen(false);
     }
@@ -262,8 +237,6 @@ export default function Sidebar() {
       case "share":
         setShareModalOpen(true);
         break;
-      default:
-        break;
     }
   };
 
@@ -271,39 +244,34 @@ export default function Sidebar() {
     setIsDropdownOpen(false);
   };
 
-  // --- Function to handle 3-dot button click ---
   const handleThreeDotClick = (
     e: React.MouseEvent<HTMLButtonElement>,
     index: number,
-    workspace: any,
+    workspace: Workspace,
     check: string
   ) => {
-     e.stopPropagation(); // Prevent triggering the main div click
-     // Use button position for dropdown
-     const rect = e.currentTarget.getBoundingClientRect();
-     setDropdownPosition({ x: rect.left, y: rect.bottom + 5 });
-     setActiveWorkspaceIndex(index);
-     setIsDropdownOpen(true);
-     setSingleWorkspace(workspace);
-     setDeleteWorkspaceId(workspace._id);
-     if (check === "shared") {
-       setIsSharedOpen(true);
-       setDeleteWorkspaceId(workspace.workspace_id);
-     } else {
-       setIsSharedOpen(false);
-     }
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    setDropdownPosition({ x: rect.left, y: rect.bottom + 5 });
+    setActiveWorkspaceIndex(index);
+    setIsDropdownOpen(true);
+    setSingleWorkspace(workspace);
+    setDeleteWorkspaceId(workspace._id);
+    if (check === "shared") {
+      setIsSharedOpen(true);
+      setDeleteWorkspaceId(workspace._id);
+    } else {
+      setIsSharedOpen(false);
+    }
   };
-
 
   return (
     <>
-      {/* Main Sidebar */}
       <aside
         className={`fixed left-0 top-0 z-30 h-screen flex flex-col bg-[#141415] text-white border-r border-zinc-800 px-4 py-4 transition-all duration-300 ease-in-out overflow-hidden ${
           isSidebarOpen ? "w-[260px]" : "w-16"
         }`}
       >
-        {/* App Name / Logo */}
         <div className="flex items-center mb-4">
           {isSidebarOpen ? (
             <div className="font-semibold text-lg">
@@ -327,11 +295,12 @@ export default function Sidebar() {
             </div>
           )}
         </div>
-        {/* Toggle Button */}
         <Button
           variant="ghost"
           size="icon"
-          className={`absolute right-5 ${isSidebarOpen ? "top-5" : "top-14"}  w-6 h-6  text-white z-50`}
+          className={`absolute right-5 ${
+            isSidebarOpen ? "top-5" : "top-14"
+          }  w-6 h-6  text-white z-50`}
           onClick={() => setIsSidebarOpen((prev) => !prev)}
         >
           {isSidebarOpen ? (
@@ -340,13 +309,11 @@ export default function Sidebar() {
             <PanelLeftOpen className="w-10 h-10" />
           )}
         </Button>
-        {/* Add Workspace Button (only when open) */}
         {isSidebarOpen && (
           <div className="mb-0">
             <Modal fetchWorkspace={fetchWorkspace} />
           </div>
         )}
-        {/* Search Input */}
         {isSidebarOpen && (
           <div className="relative mb-4">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
@@ -358,7 +325,6 @@ export default function Sidebar() {
             />
           </div>
         )}
-        {/* Workspace List */}
         <div className="flex-1 overflow-y-auto">
           <div
             className={`text-xs text-zinc-400 uppercase mb-2 ${
@@ -369,36 +335,38 @@ export default function Sidebar() {
           </div>
           <div className={`space-y-0 mr-2 ${isSidebarOpen ? "mt-0" : "mt-6"} `}>
             {!isDataLoading ? (
-              filteredWorkspaces?.map((workspace: Workspace, i: number) => {
-                 const IconComponent = getIconForWorkspace(workspace.name);
-                 return (
-                   <div
-                     key={workspace._id}
-                     onClick={() => updateUrl(workspace._id)}
-                     // onContextMenu removed or kept for right-click if desired
-                     className={`mb-1 hover:bg-zinc-800 rounded-xl cursor-pointer flex items-center justify-between ${
-                       selectedWorkspaceId === workspace._id ? "bg-zinc-800 ring-1 ring-inset ring-blue-500" : ""
-                     }`}
-                   >
-                     <SidebarItem
-                       icon={IconComponent} // Use dynamic icon
-                       label={workspace.name}
-                       isSidebarOpen={isSidebarOpen}
-                     />
-                     {/* Three Dot Menu Button */}
-                     {isSidebarOpen && (
-                       <Button
-                         variant="ghost"
-                         size="icon"
-                         data-dropdown-trigger // For identifying trigger
-                         className="h-8 w-8 text-zinc-400 hover:text-white"
-                         onClick={(e) => handleThreeDotClick(e, i, workspace, "owns")}
-                       >
-                         <MoreVertical className="h-4 w-4" />
-                       </Button>
-                     )}
-                   </div>
-                 );
+              filteredWorkspaces?.map((workspace, i) => {
+                const IconComponent = getIconForWorkspace(workspace.name);
+                return (
+                  <div
+                    key={workspace._id}
+                    onClick={() => updateUrl(workspace._id)}
+                    className={`mb-1 hover:bg-zinc-800 rounded-xl cursor-pointer flex items-center justify-between ${
+                      selectedWorkspaceId === workspace._id
+                        ? "bg-zinc-800 ring-1 ring-inset ring-blue-500"
+                        : ""
+                    }`}
+                  >
+                    <SidebarItem
+                      icon={IconComponent}
+                      label={workspace.name}
+                      isSidebarOpen={isSidebarOpen}
+                    />
+                    {isSidebarOpen && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        data-dropdown-trigger
+                        className="h-8 w-8 text-zinc-400 hover:text-white"
+                        onClick={(e) =>
+                          handleThreeDotClick(e, i, workspace, "owns")
+                        }
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                );
               })
             ) : (
               <div className="flex flex-col gap-2 mt-2">
@@ -417,46 +385,37 @@ export default function Sidebar() {
               </div>
             )}
           </div>
-
-          {/* Shared Workspaces */}
-          {/* <div
-            className={`text-xs text-zinc-400 uppercase mb-2 mt-4 ${
-              !isSidebarOpen && "sr-only"
-            }`}
-          >
-            Shared With Me
-          </div> */}
           {!isDataLoading ? (
-            sharedWorkspace?.map((workspace: any, i: number) => {
-               const IconComponent = getIconForWorkspace(workspace?.workspace_name);
-               return (
-                 <div
-                   key={workspace.workspace_id}
-                   onClick={() => updateUrl(workspace.workspace_id)}
-                   // onContextMenu removed or kept for right-click if desired
-                   className={`mb-1 hover:bg-zinc-800 rounded-xl cursor-pointer flex items-center justify-between ${
-                     selectedWorkspaceId === workspace.workspace_id ? "bg-zinc-800 ring-1 ring-inset ring-blue-500" : ""
-                   }`}
-                 >
-                   <SidebarItem
-                     icon={IconComponent} // Use dynamic icon
-                     label={workspace?.workspace_name}
-                     isSidebarOpen={isSidebarOpen}
-                   />
-                   {/* Three Dot Menu Button for Shared (if needed) */}
-                   {isSidebarOpen && (
-                     <Button
-                       variant="ghost"
-                       size="icon"
-                       data-dropdown-trigger
-                       className="h-8 w-8 text-zinc-400 hover:text-white"
-                       onClick={(e) => handleThreeDotClick(e, i, workspace, "shared")}
-                     >
-                       <MoreVertical className="h-4 w-4" />
-                     </Button>
-                   )}
-                 </div>
-               );
+            sharedWorkspace?.map((workspace, i) => {
+              const IconComponent = getIconForWorkspace(workspace?.workspace_name);
+              return (
+                <div
+                  key={workspace.workspace_id}
+                  onClick={() => updateUrl(workspace.workspace_id)}
+                  className={`mb-1 hover:bg-zinc-800 rounded-xl cursor-pointer flex items-center justify-between ${
+                    selectedWorkspaceId === workspace.workspace_id
+                      ? "bg-zinc-800 ring-1 ring-inset ring-blue-500"
+                      : ""
+                  }`}
+                >
+                  <SidebarItem
+                    icon={IconComponent}
+                    label={workspace?.workspace_name}
+                    isSidebarOpen={isSidebarOpen}
+                  />
+                  {isSidebarOpen && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      data-dropdown-trigger
+                      className="h-8 w-8 text-zinc-400 hover:text-white"
+                      onClick={(e) => handleThreeDotClick(e, i, workspace, "shared")}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              );
             })
           ) : (
             <div className="flex flex-col gap-2 mt-2">
@@ -469,19 +428,17 @@ export default function Sidebar() {
             </div>
           )}
         </div>
-        {/* Bottom Menu */}
         <div className="mt-4 space-y-2 border-t border-zinc-800 pt-4">
           <SidebarItem
             icon={Settings}
             label="Settings"
             isSidebarOpen={isSidebarOpen}
-            onClick={() => setIsSettingsModalOpen(true)} // Add click handler
+            onClick={() => setIsSettingsModalOpen(true)}
           />
           <SidebarItem
             icon={UserPlus}
             label="Invite members"
             isSidebarOpen={isSidebarOpen}
-            // Add click handler if needed
           />
           <span onClick={handleLogOut}>
             <SidebarItem
@@ -492,18 +449,16 @@ export default function Sidebar() {
           </span>
         </div>
       </aside>
-      {/* Main Content */}
       <Collection1
-        selectedWorkspace={selectedWorkspaceId} // Pass ID
-        setSelectedWorkspace={setSelectedWorkspaceId} // Pass setter for ID
-        workspaces={allWorkspaces} // Pass all workspaces
+        selectedWorkspace={selectedWorkspaceId}
+        setSelectedWorkspace={setSelectedWorkspaceId}
+        workspaces={allWorkspaces}
         isSidebarOpen={isSidebarOpen}
       />
-      {/* Dropdown Menu (context menu) */}
       {isDropdownOpen && (
         <div
           ref={dropdownRef}
-          className="fixed z-50 bg-zinc-900 border border-zinc-700 rounded-md shadow-lg py-1 min-w-[160px]" // Darker background, border, shadow, min width
+          className="fixed z-50 bg-zinc-900 border border-zinc-700 rounded-md shadow-lg py-1 min-w-[160px]"
           style={{ left: dropdownPosition.x, top: dropdownPosition.y }}
         >
           {!isSharedOpen && (
@@ -536,16 +491,13 @@ export default function Sidebar() {
               className="flex items-center justify-between w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/20 transition-colors duration-150"
               onClick={() => handleOptionClick("delete")}
             >
-              <span>Remove</span> {/* Or "Leave" depending on action */}
+              <span>Remove</span>
               <Trash2 className="h-4 w-4" />
             </button>
           )}
         </div>
       )}
-      <SettingsModal
-        open={isSettingsModalOpen}
-        setOpen={setIsSettingsModalOpen}
-      />
+      <SettingsModal open={isSettingsModalOpen} setOpen={setIsSettingsModalOpen} />
       <DeleteModal
         open={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
@@ -567,22 +519,21 @@ export default function Sidebar() {
   );
 }
 
-// Updated SidebarItem Component
 function SidebarItem({
   icon: Icon,
   label,
   isSidebarOpen,
-  onClick, // Add onClick prop
+  onClick,
 }: {
   icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   label: string;
   isSidebarOpen?: boolean;
-  onClick?: () => void; // Add onClick type
+  onClick?: () => void;
 }) {
   return (
     <Button
       variant="ghost"
-      onClick={onClick} // Attach onClick handler
+      onClick={onClick}
       className={`w-full justify-start px-2 text-sm text-zinc-200 hover:text-white overflow-hidden ${
         isSidebarOpen ? "gap-2" : "justify-center"
       }`}

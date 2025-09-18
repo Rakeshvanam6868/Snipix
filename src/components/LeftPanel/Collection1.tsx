@@ -18,6 +18,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { baseURL } from "@/config";
 import DeleteCollectionModal from "./DeleteCollectionModal";
 import EditCollection from "./EditCollection";
+import { useSession } from "next-auth/react";
 
 interface CollectionProps {
   selectedWorkspace: string | null;
@@ -62,23 +63,29 @@ const Collection1 = ({
   const collectionid = searchParams.get("collection") || "";
   const shared = searchParams.get("shared") || "";
 
+  const { data: session, status } = useSession();
+
   const fetchCategories = React.useCallback(() => {
     const token = localStorage.getItem("token");
-    const headers = { Authorization: `Bearer ${token}` };
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
     axios
       .get(`${baseURL}/v1/api/category/${workspace}`, { headers })
-      .then((res) => {
-        setCollection(res.data);
+      .then((response) => {
+        setCollection(response.data);
+        console.log("collections=>", response.data.data);
+
         setIsDataLoading(false);
       })
-      .catch((err) => console.error(err));
+      .catch((error) => {
+        console.log(error);
+      });
   }, [workspace]);
 
   useEffect(() => {
-    if (workspace) {
-      setIsDataLoading(true);
-      fetchCategories();
-    }
+    setIsDataLoading(true);
+    workspace && fetchCategories();
   }, [workspace, fetchCategories]);
 
   useEffect(() => {
@@ -123,7 +130,7 @@ const Collection1 = ({
   const handleCreateCollection = () => {
     if (!data.trim()) return;
     setIsLoading(true);
-    const token = localStorage.getItem("token");
+    const token = (session as any).backendJwt;
     const headers = { Authorization: `Bearer ${token}` };
     const body = {
       id: workspace,

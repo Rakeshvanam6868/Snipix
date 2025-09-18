@@ -4,6 +4,7 @@ import axios from "axios";
 import { baseURL } from "@/config";
 import { IoIosArrowForward } from "react-icons/io";
 import { SearchIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 // Define a type for our snippet data for better type safety
 interface Snippet {
@@ -26,6 +27,8 @@ const SearchParamsHandler = ({ closeGlobalSearch }: SearchParam) => {
   const [searchData, setSearchData] = useState<Snippet[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const { data: session, status } = useSession();
+
   // --- NO LOGIC CHANGE: useEffect for searching remains the same ---
   useEffect(() => {
     // Debounce mechanism to prevent API calls on every keystroke
@@ -33,7 +36,12 @@ const SearchParamsHandler = ({ closeGlobalSearch }: SearchParam) => {
       if (inpText) {
         setLoading(true);
         try {
-          const token = localStorage.getItem("token");
+          const token = (session as any).backendJwt;
+
+          if (!token) {
+            throw new Error("No authentication token found");
+          }
+
           const headers = {
             Authorization: `Bearer ${token}`,
           };
@@ -57,7 +65,7 @@ const SearchParamsHandler = ({ closeGlobalSearch }: SearchParam) => {
     return () => {
       clearTimeout(handler);
     };
-  }, [inpText]);
+  }, [inpText, session]);
 
   // --- NO LOGIC CHANGE: URL update function remains the same ---
   const updateURL = (snippet: Snippet) => {

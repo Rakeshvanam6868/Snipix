@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { baseURL } from "@/config";
 import axios from "axios";
-
+import { useSession } from "next-auth/react";
 // Import shadcn/ui components
 import {
   Dialog,
@@ -30,7 +30,7 @@ const EditModal: React.FC<EditModalProps> = ({ open, onClose, workspace }) => {
 
   const [newName, setNewName] = useState<string>("");
   const [newDescription, setNewDescription] = useState<string>("");
-
+const { data: session, status } = useSession();
   useEffect(() => {
     // Populate fields when workspace data changes (e.g., modal opens)
     if (workspace && workspace._id) { // Check if workspace and ID exist
@@ -47,7 +47,7 @@ const EditModal: React.FC<EditModalProps> = ({ open, onClose, workspace }) => {
       name: newName,
       description: newDescription,
     };
-    const token = localStorage.getItem("token");
+   const token = (session as any).backendJwt;
     
     // Add a check for token existence
     if (!token) {

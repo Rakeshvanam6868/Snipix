@@ -2,7 +2,7 @@
 import React from "react";
 import { baseURL } from "@/config";
 import axios from "axios";
-
+import { useSession } from "next-auth/react";
 // Import shadcn/ui components
 import {
   Dialog,
@@ -29,7 +29,9 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   type,
   email,
 }) => {
-  const handleDelete = async (e: React.FormEvent) => { // Type the event correctly
+  const { data: session, status } = useSession(); // Use hook at top level
+
+  const handleDelete = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default if triggered by a form submit, though it's a button click here
     
     // Add a check for workspace_id
@@ -39,8 +41,10 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
         return;
     }
 
+    
+
     try {
-      const token = localStorage.getItem("token");
+      const token = (session as any).backendJwt;
 
       // Add a check for token existence
       if (!token) {

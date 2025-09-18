@@ -106,7 +106,7 @@ const Collection = () => {
 
   console.log("w_id=>", workspace);
 
-  const fetchCategories = () => {
+  const fetchCategories = React.useCallback(() => {
     const token = localStorage.getItem("token");
     const headers = {
       Authorization: `Bearer ${token}`,
@@ -122,11 +122,12 @@ const Collection = () => {
       .catch((error) => {
         console.log(error);
       });
-  };
+  }, [workspace]);
+
   useEffect(() => {
     setIsDataLoading(true);
     workspace && fetchCategories();
-  }, [workspace]);
+  }, [workspace, fetchCategories]);
 
   const handleAddClick = () => {
     setShowInput(!showInput);

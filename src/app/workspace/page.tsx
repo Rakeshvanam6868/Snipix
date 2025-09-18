@@ -2,7 +2,7 @@
 
 import Drawer from "@/components/RightDrawer/Drawer";
 import SnippetSection from "@/components/MiddleSection/SnippetSection";
-import React, { Suspense, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import axios from "axios";
@@ -16,13 +16,22 @@ import { Search } from "lucide-react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+interface SnippetSearchItem {
+  workspace_id?: string;
+  category_id?: string;
+  _id?: string;
+  title: string;
+  description: string;
+  tags: string[];
+}
+
 const WorkspacePage: React.FC = () => {
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-  const [open, setOpen] = useState(false);
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [isEditable, setIsEditable] = useState(false);
-  const [inpText, setInpText] = useState("");
-  const [searchData, setSearchData] = useState<any[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
+  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
+  const [isEditable, setIsEditable] = useState<boolean>(false);
+  const [inpText, setInpText] = useState<string>("");
+  const [searchData, setSearchData] = useState<SnippetSearchItem[]>([]);
   const [isRefresh, setIsRefresh] = useState<boolean | undefined>(undefined);
 
   const router = useRouter();
@@ -30,86 +39,35 @@ const WorkspacePage: React.FC = () => {
   const searchParams = useSearchParams();
   const { data: session, status: sessionStatus } = useSession();
 
-  // Refs to avoid race conditions and duplicate mints/redirects
-  const isMintingRef = useRef(false);
-  const hasResolvedAuthRef = useRef(false);
 
-  // Initial token check on mount (only once)
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsAuthorized(true);
-      hasResolvedAuthRef.current = true;
-    }
-  }, []);
 
-  // Auth guard: ensure a single-resolve flow
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (hasResolvedAuthRef.current) return; // already authorized or handled
-
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsAuthorized(true);
-      hasResolvedAuthRef.current = true;
-      return;
-    }
-
+  // Guard authentication flow based on NextAuth session and backend JWT
+  useEffect(() => {
     if (sessionStatus === "loading") {
       setIsAuthorized(null);
       return;
     }
 
-    if (sessionStatus === "authenticated" && session?.user?.email && !isMintingRef.current) {
-      isMintingRef.current = true;
-      const mint = async () => {
-        try {
-          const res = await axios.post(
-            `${baseURL}/v1/api/user`,
-            {
-              name: session?.user?.name,
-              email: session?.user?.email,
-              image: session?.user?.image,
-            },
-            { headers: { "Content-Type": "application/json" } }
-          );
-          const jwt = res.data?.token;
-          if (jwt) {
-            localStorage.setItem("token", jwt);
-            setIsAuthorized(true);
-            hasResolvedAuthRef.current = true;
-            return;
-          }
-        } catch {}
-        setIsAuthorized(false);
-        hasResolvedAuthRef.current = true;
-        router.replace("/");
-      };
-      mint();
+    if (sessionStatus === "unauthenticated") {
+      setIsAuthorized(false);
+      router.replace("/");
       return;
     }
 
-    // No session and no token → wait a short grace period before redirect
-    if (sessionStatus === "unauthenticated") {
-      setIsAuthorized(false);
-      hasResolvedAuthRef.current = true;
-      const timeout = setTimeout(() => {
-        // re-check token before redirect in case mint completed elsewhere
-        const lateToken = localStorage.getItem("token");
-        if (lateToken) {
-          setIsAuthorized(true);
-          return;
-        }
+    if (sessionStatus === "authenticated") {
+      if ((session as any)?.backendJwt) {
+        setIsAuthorized(true);
+      } else {
+        setIsAuthorized(false);
         router.replace("/");
-      }, 1500);
-      return () => clearTimeout(timeout);
+      }
     }
-  }, [router, sessionStatus, session?.user?.email, session?.user?.name, session?.user?.image]);
+  }, [sessionStatus, session, router]);
 
   const collection = searchParams.get("collection") ?? "";
   const snippet = searchParams.get("snippet") ?? "";
 
+  // Opens drawer and adjusts query params
   const handleAdd = () => {
     setOpenDrawer(true);
     const nextSearchParams = new URLSearchParams(searchParams.toString());
@@ -117,8 +75,8 @@ const WorkspacePage: React.FC = () => {
     router.push(`${pathname}?${nextSearchParams.toString()}`);
   };
 
-  // Keyboard shortcut
-  React.useEffect(() => {
+  // Keyboard shortcut to open search dialog
+  useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
@@ -129,30 +87,31 @@ const WorkspacePage: React.FC = () => {
     return () => document.removeEventListener("keydown", handler);
   }, []);
 
-  // Debounced global search
-  React.useEffect(() => {
+  // Debounced global search using backend JWT from session
+  useEffect(() => {
     const delay = setTimeout(async () => {
-      const token = localStorage.getItem("token");
-      if (!token || !inpText.trim()) {
+      if (!(session as any)?.backendJwt || !inpText.trim()) {
         setSearchData([]);
         return;
       }
       try {
-        const headers = { Authorization: `Bearer ${token}` };
+        const headers = { Authorization: `Bearer ${(session as any).backendJwt}` };
+        
         const response = await axios.get(
           `${baseURL}/v1/api/snippet/global?text=${encodeURIComponent(inpText)}`,
           { headers }
         );
-        setSearchData(response.data);
+        setSearchData(response.data as SnippetSearchItem[]);
       } catch (error) {
         console.error("Search error:", error);
         setSearchData([]);
       }
     }, 500);
     return () => clearTimeout(delay);
-  }, [inpText]);
+  }, [inpText, session]);
 
-  const updateURL = (snippetData: any) => {
+  // Updates URL params when snippet selected
+  const updateURL = (snippetData: SnippetSearchItem) => {
     const params = new URLSearchParams();
     params.set("workspace", snippetData.workspace_id || "");
     params.set("collection", snippetData.category_id || "");
@@ -161,7 +120,7 @@ const WorkspacePage: React.FC = () => {
     setOpen(false);
   };
 
-  const toggleRefresh = () => setIsRefresh(prev => !prev);
+  const toggleRefresh = () => setIsRefresh((prev) => !prev);
 
   return (
     <div>
@@ -227,7 +186,7 @@ const WorkspacePage: React.FC = () => {
                                 <p className="text-lg font-semibold truncate">{item.title}</p>
                                 <p className="text-sm text-zinc-300 line-clamp-2">{item.description}</p>
                                 <div className="flex flex-wrap gap-1 mt-2">
-                                  {item.tags.map((tag: string, i: number) => (
+                                  {(item.tags ?? []).map((tag: string, i: number) => (
                                     <span key={i} className="bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded">
                                       {tag}
                                     </span>
@@ -287,3 +246,6 @@ const WorkspacePage: React.FC = () => {
 };
 
 export default WorkspacePage;
+
+
+
