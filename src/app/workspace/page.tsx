@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 interface SnippetSearchItem {
@@ -68,12 +68,39 @@ const WorkspacePage: React.FC = () => {
   const snippet = searchParams.get("snippet") ?? "";
 
   // Opens drawer and adjusts query params
-  const handleAdd = () => {
-    setOpenDrawer(true);
-    const nextSearchParams = new URLSearchParams(searchParams.toString());
-    nextSearchParams.append("add", "true");
-    router.push(`${pathname}?${nextSearchParams.toString()}`);
-  };
+  // const handleAdd = () => {
+  //   setOpenDrawer(true);
+  //   const nextSearchParams = new URLSearchParams(searchParams.toString());
+  //   nextSearchParams.append("add", "true");
+  //   router.push(`${pathname}?${nextSearchParams.toString()}`);
+  // };
+
+  
+
+// Inside your component
+const handleAdd = () => {
+  const workspace = searchParams.get("workspace");
+  const collection = searchParams.get("collection");
+
+  if (!workspace || !collection) {
+    toast.error("Please select a workspace and a collection first.", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+    return;
+  }
+
+  // Valid context — proceed
+  setOpenDrawer(true);
+  const nextSearchParams = new URLSearchParams(searchParams.toString());
+  nextSearchParams.set("add", "true"); // use `set` instead of `append` to avoid duplicates
+  router.push(`${pathname}?${nextSearchParams.toString()}`);
+};
 
   // Keyboard shortcut to open search dialog
   useEffect(() => {

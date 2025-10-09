@@ -131,6 +131,7 @@ const Collection1 = ({
     if (!data.trim()) return;
     setIsLoading(true);
     const token = (session as any).backendJwt;
+    console.log("Session in frontend:", session);
     const headers = { Authorization: `Bearer ${token}` };
     const body = {
       id: workspace,
@@ -186,7 +187,7 @@ const Collection1 = ({
   return (
     <aside
       className={`fixed left-0 top-0 z-10 w-[260px] h-screen bg-[#141415] text-white border-r border-zinc-800 px-4 py-4 transition-transform duration-300 ease-in-out transform ${
-        isSidebarOpen ? "translate-x-[260px]" : "translate-x-16"
+        isSidebarOpen && selectedWorkspace ? "translate-x-[260px]" : "translate-x-16"
       }`}
     >
       <div className="flex items-center justify-between mb-4">

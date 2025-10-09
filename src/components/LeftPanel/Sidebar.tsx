@@ -189,17 +189,22 @@ export default function Sidebar() {
     router.push(`?${new URLSearchParams(query).toString()}`);
   };
 
-  useEffect(() => {
-    const initialId =
-      searchParams.get("workspace") || localStorage.getItem("selectedWorkspaceId");
-    if (initialId) {
-      setSelectedWorkspaceId(initialId);
-    }
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, [handleClickOutside, searchParams]);
+useEffect(() => {
+  const initialId = searchParams.get("workspace");
+  setSelectedWorkspaceId(initialId || null);
+}, [searchParams]);
+
+  // useEffect(() => {
+  //   const initialId =
+  //     searchParams.get("workspace") || localStorage.getItem("selectedWorkspaceId");
+  //   if (initialId) {
+  //     setSelectedWorkspaceId(initialId);
+  //   }
+  //   document.addEventListener("click", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("click", handleClickOutside);
+  //   };
+  // }, [handleClickOutside, searchParams]);
 
   const isDropdownButton = (target: Node) => {
     return target instanceof HTMLElement && target.closest("[data-dropdown-trigger]");

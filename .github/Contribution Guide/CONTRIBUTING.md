@@ -1,18 +1,21 @@
-# Contributing to SnipSavvy
+# Contributing to Snipix
 
-Thank you for considering contributing to SnipSavvy! Your contributions are essential to the project's success and improvement. Whether you're reporting a bug, suggesting a feature, or contributing code, your help is greatly appreciated.
+Thank you for considering contributing to Snipix Your contributions are essential to the project's success and improvement. Whether you're reporting a bug, suggesting a feature, or contributing code, your help is greatly appreciated.
 
 ## Table of Contents
 
-1. [Code of Conduct](#code-of-conduct)
-2. [How to Contribute](#how-to-contribute)
-   - [Reporting Bugs](#reporting-bugs)
-   - [Suggesting Features](#suggesting-features)
-   - [Submitting Pull Requests](#submitting-pull-requests)
-3. [Coding Standards](#coding-standards)
-4. [Style Guides](#style-guides)
-5. [Commit Messages](#commit-messages)
-6. [Contact](#contact)
+- [Contributing to Snipix](#contributing-to-snipix)
+  - [Table of Contents](#table-of-contents)
+  - [Code of Conduct](#code-of-conduct)
+  - [How to Contribute](#how-to-contribute)
+    - [Reporting Bugs](#reporting-bugs)
+    - [Suggesting Features](#suggesting-features)
+    - [Submitting Pull Requests](#submitting-pull-requests)
+  - [Coding Standards](#coding-standards)
+  - [Style Guides](#style-guides)
+    - [JavaScript and TypeScript](#javascript-and-typescript)
+  - [Commit Messages](#commit-messages)
+  - [Contact](#contact)
 
 ## Code of Conduct
 
@@ -92,4 +95,4 @@ To maintain code quality, please adhere to the following standards:
 
 If you have any questions, feel free to reach out to the maintainers. You can find our contact information in the `README.md` file or open a discussion in the repository.
 
-Thank you for contributing to SnipSavvy!
+Thank you for contributing to Snipix!
