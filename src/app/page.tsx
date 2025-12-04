@@ -11,6 +11,7 @@ import GoToTop from "@/components/LandingPage/scrollToTop";
 import SnipixOffers from "@/components/LandingPage/SnipixOffers";
 
 export default function Component() {
+  
   return (
     <div className="flex flex-col min-h-[100dvh] text-gray-50">
       <main className="flex-1">
