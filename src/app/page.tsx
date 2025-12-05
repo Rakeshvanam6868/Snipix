@@ -8,7 +8,7 @@ import Footer from "@/components/LandingPage/Footer";
 import Working from "@/components/LandingPage/Bug";
 import Bug from "@/components/LandingPage/Bug";
 import GoToTop from "@/components/LandingPage/scrollToTop";
-import SnipixOffers from "@/components/LandingPage/SnipixOffers";
+import WhySnipix from "@/components/LandingPage/SnipixOffers";
 
 export default function Component() {
   
@@ -20,8 +20,8 @@ export default function Component() {
         <section className="w-full py-12 px-20 md:py-24 lg:py-24 bg-[#0b0b0e] text-gray-50">
           <Features />
         </section>
-        <section className="w-full py-12 md:py-20 lg:pt-32 pb-24 bg-[#030303] px-32">
-          <SnipixOffers />
+        <section className="w-full ">
+          <WhySnipix/>
         </section>
 
         {/* <Working /> */}

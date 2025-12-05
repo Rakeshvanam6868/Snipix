@@ -19,15 +19,13 @@ const Hero: React.FC = () => {
       <BackgroundBeams/>
       <div className="flex flex-col items-center justify-center gap-4 text-center py-32 sm:pb-32 lg:pb-48">
         <h1 className="text-4xl md:text-6xl font-bold mt-10 sm:px-12 md:px-52 lg:px-96 text-[#F2F2F2] mb-4">
-          Manage Your Code Snippets with Ease
+          Your personal code library. Organized. Searchable. Shareable.
         </h1>
         <p className="text-lg md:text-xl text-[#FFFFFF] mb-6 px-5 max-w-2xl">
-          Snipix provides a clean and intuitive interface to help you
-          quickly find, organize, and share your code snippets. Never
-          waste time searching for that one snippet you need again.
+          Save, tag, and reuse your snippets across projects without losing time or context.
         </p>
         
-        <SignUpButton description="Get Started" />
+        <SignUpButton description="Create your first workspace" />
         </div>
     </div>
 
