@@ -48,6 +48,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </div>
         </div>
+       <script src="https://rakeshvanam6868.github.io/qoris-chat-widget/widget.js" async data-widget-id="af95c654-c6a8-4662-a280-09a523ece475"></script>
       </body>
     </html>
   );
